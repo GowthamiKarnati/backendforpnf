@@ -293,7 +293,7 @@ async function getCustomersRecords(url, headers, sheetId, criteria) {
 //       }
 //       const sheetId = 30273103
       
-//       const data = JSON.stringify({"30526":{"value":10 },"30527":{"value":"Goodyear"},"30528":{"value":10000 }});
+//       const data = JSON.stringify({"30526":{"value":"9"}, "30527":{"value":"good year"}, "30528":{"value":"1000"}, "31816":{"value":"SADANAND AMLE"}, "31817":{"value":"BSVPA5781Q"}, "31818":{"value":"+919130858727"}, "31819":{"value":"+917020490374"}});
 //       const tyreData= await getTyreData(url,headers,sheetId,data);
 //       console.log('TyreData: ', tyreData)
 
@@ -314,7 +314,7 @@ async function getCustomersRecords(url, headers, sheetId, criteria) {
 //   console.log('All Records from Tigersheet Backend', response.data);
 
 //   return response.data;
-// }
+//  }
 app.post("/create", async (req, res) => {
   try {
     const url = process.env.TIGERSHEET_API_CREATE_URL;
@@ -325,12 +325,16 @@ app.post("/create", async (req, res) => {
     const sheetId = 30273103;
 
     // Extract data from the request body
-    const { numberOfTires, selectedBrand, loanAmount } = req.body;
+     const { numberOfTires, selectedBrand, loanAmount, name, pan, mobilenumber, alternatemobile } = req.body;
 
-    const data = JSON.stringify({
+     const data = JSON.stringify({
       "30526": { "value": numberOfTires },
       "30527": { "value": selectedBrand },
-      "30528": { "value": loanAmount }
+      "30528": { "value": loanAmount },
+      "31816": { "value": name },
+      "31817": { "value": pan },
+      "31818": { "value": mobilenumber },
+      "31819": { "value": alternatemobile }
     });
 
     const tyreData = await getTyreData(url, headers, sheetId, data);
