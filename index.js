@@ -148,12 +148,13 @@ const axios = require('axios');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const _ = require('lodash');
-
+const bodyParser = require('body-parser');
 dotenv.config(); 
 
 const app = express();
 const Port = process.env.PORT || 5000;
-
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(express.json());
 app.use(cors());
 
@@ -283,7 +284,75 @@ async function getCustomersRecords(url, headers, sheetId, criteria) {
 
     return response.data.data;
 }
+// app.post("/create",async (req,res)=>{
+//   try{
+//       const url=process.env.TIGERSHEET_API_CREATE_URL;
+//       const headers={
+//           'Authorization':'C9B53439FA03FB946C93E9AC9963070B221EC0E3CD66399A',
+//           'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+//       }
+//       const sheetId = 30273103
+      
+//       const data = JSON.stringify({"30526":{"value":10 },"30527":{"value":"Goodyear"},"30528":{"value":10000 }});
+//       const tyreData= await getTyreData(url,headers,sheetId,data);
+//       console.log('TyreData: ', tyreData)
 
+//       res.send({data:tyreData})
+      
+//   }catch(err){
+//       console.error('Error in fetching data:', err.message);
+//       res.status(500).send('Internal Server Error');
+//   }
+// });
+
+// async function getTyreData(url,headers,sheetId,data){
+//   const payload={
+//       'sheet_id':sheetId,
+//       'data':data
+//   }
+//   const response = await axios.post(url, payload, { headers });
+//   console.log('All Records from Tigersheet Backend', response.data);
+
+//   return response.data;
+// }
+app.post("/create", async (req, res) => {
+  try {
+    const url = process.env.TIGERSHEET_API_CREATE_URL;
+    const headers = {
+      'Authorization': 'C9B53439FA03FB946C93E9AC9963070B221EC0E3CD66399A',
+      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+    };
+    const sheetId = 30273103;
+
+    // Extract data from the request body
+    const { numberOfTires, selectedBrand, loanAmount } = req.body;
+
+    const data = JSON.stringify({
+      "30526": { "value": numberOfTires },
+      "30527": { "value": selectedBrand },
+      "30528": { "value": loanAmount }
+    });
+
+    const tyreData = await getTyreData(url, headers, sheetId, data);
+    console.log('TyreData:', tyreData);
+
+    res.send({ data: tyreData });
+
+  } catch (err) {
+    console.error('Error in fetching data:', err.message);
+    res.status(500).send('Internal Server Error');
+  }
+});
+async function getTyreData(url, headers, sheetId, data) {
+  const payload = {
+    'sheet_id': sheetId,
+    'data': data
+  }
+  const response = await axios.post(url, payload, { headers });
+  console.log('All Records from Tigersheet Backend', response.data);
+
+  return response.data;
+}
 app.listen(Port,()=>{
     console.log(`Server is running on ${Port}`);
 });
