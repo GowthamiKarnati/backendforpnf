@@ -317,20 +317,20 @@ async function getCustomersRecords(url, headers, sheetId, criteria) {
 // }
 app.post("/create", async (req, res) => {
   try {
-    const url = process.env.TIGERSHEET_API_URL;
+    const url = process.env.TIGERSHEET_API_CREATE_URL;
     const headers = {
-      'Authorization': '770A4CF28DC6AE0B14D0519C1C5CCE58A53D4553866CD935',
+      'Authorization': 'C9B53439FA03FB946C93E9AC9963070B221EC0E3CD66399A',
       'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
     };
-    const sheetId = 59283844;
+    const sheetId = 30273103;
 
     // Extract data from the request body
     const { numberOfTires, selectedBrand, loanAmount } = req.body;
 
     const data = JSON.stringify({
-      "806": { "value": numberOfTires },
-      "807": { "value": selectedBrand },
-      "805": { "value": loanAmount }
+      "30526": { "value": numberOfTires },
+      "30527": { "value": selectedBrand },
+      "30528": { "value": loanAmount }
     });
 
     const tyreData = await getTyreData(url, headers, sheetId, data);
