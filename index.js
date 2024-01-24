@@ -330,7 +330,8 @@ app.post("/create", async (req, res) => {
     const sheetId = 30273103;
 
     // Extract data from the request body
-     const { numberOfTires, selectedBrand, loanAmount, name, pan, mobilenumber, alternatemobile,martialstatus, numofchildren, housetype,trucknumber, date, source } = req.body;
+    const { numberOfTires, selectedBrand, loanAmount, name, pan, mobilenumber, alternatemobile, martialstatus, numofchildren, housetype, trucknumber, date, source } = req.body;
+
 
      const data = JSON.stringify({
       "30526": { "value": numberOfTires },
