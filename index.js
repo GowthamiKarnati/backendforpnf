@@ -293,7 +293,12 @@ async function getCustomersRecords(url, headers, sheetId, criteria) {
 //       }
 //       const sheetId = 30273103
       
-//       const data = JSON.stringify({"30526":{"value":"9"}, "30527":{"value":"good year"}, "30528":{"value":"1000"}, "31816":{"value":"SADANAND AMLE"}, "31817":{"value":"BSVPA5781Q"}, "31818":{"value":"+919130858727"}, "31819":{"value":"+917020490374"}});
+//       const data = JSON.stringify({"30526":{"value":"9"}, "30527":{"value":"good year"}, "30528":{"value":"1000"}, "31816":{"value":"SADANAND AMLE"}, "31817":{"value":"BSVPA5781Q"}, "31818":{"value":"+919130858727"}, "31819":{"value":"+917020490374"},"32046": { "value": "Married" },
+//       "32047": { "value": 2 },
+//       "32048": { "value": "Apartment" },
+//       "32049": { "value": "ABC123" },
+//       "32050": { "value": "2024-01-24" },
+//       "32051": { "value": "Online" }});
 //       const tyreData= await getTyreData(url,headers,sheetId,data);
 //       console.log('TyreData: ', tyreData)
 
@@ -325,7 +330,7 @@ app.post("/create", async (req, res) => {
     const sheetId = 30273103;
 
     // Extract data from the request body
-     const { numberOfTires, selectedBrand, loanAmount, name, pan, mobilenumber, alternatemobile } = req.body;
+     const { numberOfTires, selectedBrand, loanAmount, name, pan, mobilenumber, alternatemobile,martialstatus, numofchildren, housetype,trucknumber, date, source } = req.body;
 
      const data = JSON.stringify({
       "30526": { "value": numberOfTires },
@@ -334,7 +339,13 @@ app.post("/create", async (req, res) => {
       "31816": { "value": name },
       "31817": { "value": pan },
       "31818": { "value": mobilenumber },
-      "31819": { "value": alternatemobile }
+      "31819": { "value": alternatemobile },
+      "32046": { "value": martialstatus },
+      "32047": { "value": numofchildren },
+      "32048": { "value": housetype },
+      "32049": { "value": trucknumber },
+      "32050": { "value": date },
+      "32051": { "value": source }
     });
 
     const tyreData = await getTyreData(url, headers, sheetId, data);
