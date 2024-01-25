@@ -396,7 +396,7 @@ app.post("/create", async (req, res) => {
       "802": { "value": housetype },
       "803": { "value": trucknumber },
       "790": { "value": date },
-      
+      "810": {"value": pan},
       "795": {"value": numberoftrucks}
     });
     
