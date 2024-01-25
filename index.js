@@ -372,7 +372,7 @@ async function getCustomersRecords(url, headers, sheetId, criteria) {
 // }
 app.post("/create", async (req, res) => {
   try {
-    const url = process.env.TIGERSHEET_API_URL;
+    const url = process.env.TIGERSHEET_API_CREATE_URL;
     const headers = {
       'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
       'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
