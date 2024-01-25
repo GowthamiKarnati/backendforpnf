@@ -320,34 +320,84 @@ async function getCustomersRecords(url, headers, sheetId, criteria) {
 
 //   return response.data;
 //  }
+// app.post("/create", async (req, res) => {
+//   try {
+//     const url = process.env.TIGERSHEET_API_CREATE_URL;
+//     const headers = {
+//       'Authorization': 'C9B53439FA03FB946C93E9AC9963070B221EC0E3CD66399A',
+//       'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+//     };
+//     const sheetId = 30273103;
+
+//     // Extract data from the request body
+//     const { numberOfTires, selectedBrand, loanAmount, name, pan, mobilenumber, alternatemobile, martialstatus, numofchildren, housetype, trucknumber, date, source,numberoftrucks } = req.body;
+
+
+//      const data = JSON.stringify({
+//       "30526": { "value": numberOfTires },
+//       "30527": { "value": selectedBrand },
+//       "30528": { "value": loanAmount },
+//       "31816": { "value": name },
+//       "31817": { "value": pan },
+//       "31818": { "value": mobilenumber },
+//       "31819": { "value": alternatemobile },
+//       "32046": { "value": martialstatus },
+//       "32047": { "value": numofchildren },
+//       "32048": { "value": housetype },
+//       "32049": { "value": trucknumber },
+//       "32050": { "value": date },
+//       "32051": { "value": source },
+//       "32053": {"value": numberoftrucks}
+//     });
+
+//     const tyreData = await getTyreData(url, headers, sheetId, data);
+//     console.log('TyreData:', tyreData);
+
+//     res.send({ data: tyreData });
+
+//   } catch (err) {
+//     console.error('Error in fetching data:', err.message);
+//     res.status(500).send('Internal Server Error');
+//   }
+// });
+// async function getTyreData(url, headers, sheetId, data) {
+//   const payload = {
+//     'sheet_id': sheetId,
+//     'data': data
+//   }
+//   const response = await axios.post(url, payload, { headers });
+//   console.log('All Records from Tigersheet Backend', response.data);
+
+//   return response.data;
+// }
 app.post("/create", async (req, res) => {
   try {
-    const url = process.env.TIGERSHEET_API_CREATE_URL;
+    const url = process.env.TIGERSHEET_API_URL;
     const headers = {
-      'Authorization': 'C9B53439FA03FB946C93E9AC9963070B221EC0E3CD66399A',
+      'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
       'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
     };
-    const sheetId = 30273103;
+    const sheetId = 59283844;
 
     // Extract data from the request body
     const { numberOfTires, selectedBrand, loanAmount, name, pan, mobilenumber, alternatemobile, martialstatus, numofchildren, housetype, trucknumber, date, source,numberoftrucks } = req.body;
 
 
      const data = JSON.stringify({
-      "30526": { "value": numberOfTires },
-      "30527": { "value": selectedBrand },
-      "30528": { "value": loanAmount },
-      "31816": { "value": name },
-      "31817": { "value": pan },
-      "31818": { "value": mobilenumber },
-      "31819": { "value": alternatemobile },
-      "32046": { "value": martialstatus },
-      "32047": { "value": numofchildren },
-      "32048": { "value": housetype },
-      "32049": { "value": trucknumber },
-      "32050": { "value": date },
-      "32051": { "value": source },
-      "32053": {"value": numberoftrucks}
+      "806": { "value": numberOfTires },
+      "840": { "value": selectedBrand },
+      "805": { "value": loanAmount },
+      "791": { "value": name },
+      "792": { "value": pan },
+      "793": { "value": mobilenumber },
+      "794": { "value": alternatemobile },
+      "800": { "value": martialstatus },
+      "801": { "value": numofchildren },
+      "802": { "value": housetype },
+      "803": { "value": trucknumber },
+      "790": { "value": date },
+      "807": { "value": source },
+      "795": {"value": numberoftrucks}
     });
 
     const tyreData = await getTyreData(url, headers, sheetId, data);
