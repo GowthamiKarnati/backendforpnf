@@ -379,8 +379,8 @@ app.post("/create", async (req, res) => {
     };
     const sheetId = 59283844;
 
-    // Extract data from the request body
-    const { numberOfTires, selectedBrand, loanAmount, name, pan, mobilenumber, alternatemobile, martialstatus, numofchildren, housetype, trucknumber, date, source,numberoftrucks } = req.body;
+    
+    const { numberOfTires, selectedBrand, loanAmount, name, pan, mobilenumber, alternatemobile, martialstatus, numofchildren, housetype, trucknumber, date,numberoftrucks } = req.body;
 
 
      const data = JSON.stringify({
@@ -396,9 +396,11 @@ app.post("/create", async (req, res) => {
       "802": { "value": housetype },
       "803": { "value": trucknumber },
       "790": { "value": date },
-      "807": { "value": source },
+      
       "795": {"value": numberoftrucks}
     });
+    
+    
 
     const tyreData = await getTyreData(url, headers, sheetId, data);
     console.log('TyreData:', tyreData);
