@@ -385,7 +385,7 @@ app.post("/create", async (req, res) => {
 
      const data = JSON.stringify({
       "806": { "value": numberOfTires },
-      "840": { "value": selectedBrand },
+      "855": { "value": selectedBrand },
       "805": { "value": loanAmount },
       "791": { "value": name },
       "792": { "value": pan },
