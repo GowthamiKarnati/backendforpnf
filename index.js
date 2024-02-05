@@ -263,7 +263,6 @@ async function getemiRecords(url, headers, sheetId,criteria) {
         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         };
         const sheetId = process.env.TIGERSHEET_CUSTOMERS_SHEET_ID;
-        // Get criteria from request query parameters
         const criteria = req.query.criteria || '';;
         const cdloansRecords = await getcustomerRecords(url, headers, sheetId,criteria);
         res.send({data:cdloansRecords})
@@ -309,7 +308,6 @@ async function gettruckRecords(url, headers, sheetId,criteria) {
     const payload = {
       'sheet_id': sheetId,
       'criteria': criteria,
-    //   'sort':JSON.stringify([{"property":"column_85","direction":"desc"}])
     };
     const response = await axios.post(url, payload, { headers });
     console.log('All Records from Tigersheet Backend', response.data);
@@ -492,6 +490,38 @@ async function getTyreData(url, headers, sheetId, data) {
 
   return response.data;
 }
+
+
+app.get('/customerKyc', async (req, res) => {
+  try {
+      const url = process.env.TIGERSHEET_API_URL;
+      const headers = {
+          'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+      };
+      const sheetId = process.env.TIGERSHEET_CUSTOMER_KYC_SHEET_ID;
+      // Get criteria from request query parameters
+      const criteria = req.query.criteria || '';
+      const customerKycRecords = await getCustomerKycRecords(url, headers, sheetId, criteria);
+      res.send({ data: customerKycRecords });
+  } catch (err) {
+      console.error('Error in fetching customerKyc data:', err.message);
+      res.status(500).send('Internal Server Error');
+  }
+});
+
+async function getCustomerKycRecords(url, headers, sheetId, criteria) {
+  const payload = {
+      'sheet_id': sheetId,
+      'criteria': criteria,
+  };
+
+  const response = await axios.post(url, payload, { headers });
+  console.log('All Records from Tigersheet Backend', response.data);
+
+  return response.data.data;
+}
+
 app.listen(Port,()=>{
     console.log(`Server is running on ${Port}`);
 });
