@@ -526,7 +526,36 @@ async function getCustomerKycRecords(url, headers, sheetId, criteria) {
 
   return response.data.data;
 }
+app.get('/dealers', async (req, res) => {
+  try {
+      const url = process.env.TIGERSHEET_API_URL;
+      const headers = {
+          'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+      };
+      const sheetId = process.env.TIGERSHEET_DEALERS_SHEET_ID;
+      // Get criteria from request query parameters
+      const criteria = req.query.criteria || '';
+      const customersRecords = await getCustomersRecords(url, headers, sheetId, criteria);
+      res.send({ data: customersRecords });
 
+  } catch (err) {
+      console.error('Error in fetching data:', err.message);
+      res.status(500).send('Internal Server Error');
+  }
+});
+
+async function getCustomersRecords(url, headers, sheetId, criteria) {
+  const payload = {
+      'sheet_id': sheetId,
+      'criteria': criteria,
+  };
+
+  const response = await axios.post(url, payload, { headers });
+  console.log('All Records from Tigersheet Backend for Customers', response.data);
+
+  return response.data.data;
+}
 app.listen(Port,()=>{
     console.log(`Server is running on ${Port}`);
 });
