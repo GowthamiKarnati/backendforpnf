@@ -473,7 +473,7 @@ app.post("/create", async (req, res) => {
       "807":{"value":sourceJsonValue},
       "1208":{"value":insurancetype},
       "798": {"value": monthlyemioutflow},
-      "1101": {"value": numberOfYearsInBusiness}
+      "796": {"value": numberOfYearsInBusiness}
     });
     
     
