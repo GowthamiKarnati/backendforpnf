@@ -448,7 +448,7 @@ app.post("/create", async (req, res) => {
     const sheetId = 59283844;
 
     
-    const { numberOfTires, selectedBrand, loanAmount, name, pan, mobilenumber, alternatemobile, martialstatus, numofchildren, housetype, trucknumber, date,numberoftrucks,source, insurancetype } = req.body;
+    const { numberOfTires, selectedBrand, loanAmount, name, pan, mobilenumber, alternatemobile, martialstatus, numofchildren, housetype, trucknumber, date,numberoftrucks,source, insurancetype, monthlyemioutflow } = req.body;
     const sourceValue = source ? source : 'null';
     const sourceJsonValue = JSON.stringify({
       "reference_column_id": 236,
@@ -471,7 +471,8 @@ app.post("/create", async (req, res) => {
       "810": {"value": pan},
       "795": {"value": numberoftrucks},
       "807":{"value":sourceJsonValue},
-      "1208":{"value":insurancetype}
+      "1208":{"value":insurancetype},
+      "798": {"value": monthlyemioutflow}
     });
     
     
