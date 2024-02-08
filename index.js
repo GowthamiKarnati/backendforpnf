@@ -470,7 +470,7 @@ app.post("/create", async (req, res) => {
       "790": { "value": date },
       "810": {"value": pan},
       "795": {"value": numberoftrucks},
-      "807":{"value":sourceJsonValue},
+      "807": {"value":sourceJsonValue},
       "1208":{"value":insurancetype},
       "798": {"value": monthlyemioutflow},
       "796": {"value": numberOfYearsInBusiness},
@@ -620,6 +620,36 @@ async function getVehicleRecords(url, headers, sheetId, criteria) {
 
   return response.data.data;
 }
+app.get('/testloans', async (req, res) => {
+  try {
+      const url = process.env.TIGERSHEET_API_URL;
+      const headers = {
+          'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+      };
+      const sheetId = process.env.TIGERSHEET_TEST_LOAN_APPLICATION_SHEET_ID;
+      // Get criteria from request query parameters
+      const criteria = req.query.criteria || '';
+      const testLoanRecords = await getTestLoanRecords(url, headers, sheetId, criteria);
+      res.send({ data: testLoanRecords });
+  } catch (err) {
+      console.error('Error in fetching data:', err.message);
+      res.status(500).send('Internal Server Error');
+  }
+});
+
+async function getTestLoanRecords(url, headers, sheetId, criteria) {
+  const payload = {
+      'sheet_id': sheetId,
+      'criteria': criteria,
+  };
+
+  const response = await axios.post(url, payload, { headers });
+  console.log('All Records from Tigersheet Backend', response.data);
+
+  return response.data.data;
+}
+
 app.listen(Port,()=>{
     console.log(`Server is running on ${Port}`);
 });
