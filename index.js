@@ -705,7 +705,7 @@ async function getCustomersWithSanctionedStatus() {
   }
 
   const customers = response.data.data;
-  //console.log('Customers:', customers);
+  console.log('Customers:', customers);
 
   const dealerMobileNumbers = [];
 
