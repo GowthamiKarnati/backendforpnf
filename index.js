@@ -291,7 +291,7 @@ async function getcustomerRecords(url, headers, sheetId,criteria) {
     //   'sort':JSON.stringify([{"property":"column_85","direction":"desc"}])
     };
     const response = await axios.post(url, payload, { headers });
-    console.log('All Records from Tigersheet Backend', response.data);
+    //console.log('All Records from Tigersheet Backend', response.data);
   
     return response.data.data;
 }
@@ -321,7 +321,7 @@ async function gettruckRecords(url, headers, sheetId,criteria) {
       'criteria': criteria,
     };
     const response = await axios.post(url, payload, { headers });
-    console.log('All Records from Tigersheet Backend', response.data);
+    //console.log('All Records from Tigersheet Backend', response.data);
   
     return response.data.data;
 }
@@ -506,7 +506,7 @@ async function getTyreData(url, headers, sheetId, data) {
     'data': data
   }
   const response = await axios.post(url, payload, { headers });
-  console.log('All Records from Tigersheet Backend', response.data);
+  //console.log('All Records from Tigersheet Backend', response.data);
 
   return response.data;
 }
@@ -537,7 +537,7 @@ async function getCustomerKycRecords(url, headers, sheetId, criteria) {
   };
 
   const response = await axios.post(url, payload, { headers });
-  console.log('All Records from Tigersheet Backend', response.data);
+  //console.log('All Records from Tigersheet Backend', response.data);
 
   return response.data.data;
 }
@@ -567,7 +567,7 @@ async function getCustomersRecords(url, headers, sheetId, criteria) {
   };
 
   const response = await axios.post(url, payload, { headers });
-  console.log('All Records from Tigersheet Backend for Customers', response.data);
+  //console.log('All Records from Tigersheet Backend for Customers', response.data);
 
   return response.data.data;
 }
@@ -597,7 +597,7 @@ async function getCustomersRecords(url, headers, sheetId, criteria) {
   };
 
   const response = await axios.post(url, payload, { headers });
-  console.log('All Records from Tigersheet Backend for Customers', response.data);
+  //console.log('All Records from Tigersheet Backend for Customers', response.data);
 
   return response.data.data;
 }
@@ -627,7 +627,7 @@ async function getVehicleRecords(url, headers, sheetId, criteria) {
   };
 
   const response = await axios.post(url, payload, { headers });
-  console.log('All Records from Tigersheet Backend for Vehicles', response.data);
+  //console.log('All Records from Tigersheet Backend for Vehicles', response.data);
 
   return response.data.data;
 }
@@ -656,226 +656,226 @@ async function getTestLoanRecords(url, headers, sheetId, criteria) {
   };
 
   const response = await axios.post(url, payload, { headers });
-  console.log('All Records from Tigersheet Backend', response.data);
+  //console.log('All Records from Tigersheet Backend', response.data);
 
   return response.data.data;
 }
 
-async function sendMulticastMessage(messageData, tokens) {
-  console.log(messageData)
-  try {
-    const message = {
-      // notification: messageData, // Custom data for the message
-      notification:{
-          title:messageData.title,
-          body:messageData.body
-      },
-      // tokens: tokens, // Array of FCM tokens to send the message to
-      token: tokens, // Array of FCM tokens to send the message to
-      android: {
-          notification: {
-            // Set priority to high for prompt delivery
-            priority: 'high',
-          },
-        },
-    };
+// async function sendMulticastMessage(messageData, tokens) {
+//   console.log(messageData)
+//   try {
+//     const message = {
+//       // notification: messageData, // Custom data for the message
+//       notification:{
+//           title:messageData.title,
+//           body:messageData.body
+//       },
+//       // tokens: tokens, // Array of FCM tokens to send the message to
+//       token: tokens, // Array of FCM tokens to send the message to
+//       android: {
+//           notification: {
+//             // Set priority to high for prompt delivery
+//             priority: 'high',
+//           },
+//         },
+//     };
 
-  //   const response = await messaging.sendMulticast(message);
-    const response = await messaging.send(message);
-   console.log('Successfully sent message:', response);
-    return response;
-  } catch (error) {
-    console.error('Error sending message:', error);
-    throw error; 
-  }
-}
+//   //   const response = await messaging.sendMulticast(message);
+//     const response = await messaging.send(message);
+//    console.log('Successfully sent message:', response);
+//     return response;
+//   } catch (error) {
+//     console.error('Error sending message:', error);
+//     throw error; 
+//   }
+// }
 
 
 
-async function getCustomersWithSanctionedStatus() {
-  const sheetId = '59283844';
-  const criteria = 'sheet_59283844.column_821="sanctioned"';
-  //const apiUrl = `https://pnf.tigersheet.com/api/sheet-api/get-records?sheet_id=${sheetId}&criteria='%22${encodeURIComponent(criteria)}%22'`;
-  const apiUrl=`https://backendforpnf.vercel.app/testloans?criteria=sheet_59283844.column_821=%22sanctioned%22`
-  //console.log('Fetching customers...');
-  const response = await axios.get(apiUrl);
+// async function getCustomersWithSanctionedStatus() {
+//   const sheetId = '59283844';
+//   const criteria = 'sheet_59283844.column_821="sanctioned"';
+//   //const apiUrl = `https://pnf.tigersheet.com/api/sheet-api/get-records?sheet_id=${sheetId}&criteria='%22${encodeURIComponent(criteria)}%22'`;
+//   const apiUrl=`https://backendforpnf.vercel.app/testloans?criteria=sheet_59283844.column_821=%22sanctioned%22`
+//   //console.log('Fetching customers...');
+//   const response = await axios.get(apiUrl);
 
-  if (response.status !== 200) {
-    throw new Error('Failed to fetch data from the Tigersheet API.');
-  }
+//   if (response.status !== 200) {
+//     throw new Error('Failed to fetch data from the Tigersheet API.');
+//   }
 
-  const customers = response.data.data;
-  console.log('Customers:', customers);
+//   const customers = response.data.data;
+//   //console.log('Customers:', customers);
 
-  const dealerMobileNumbers = [];
+//   const dealerMobileNumbers = [];
 
-  for (const customer of customers) {
-    const source = customer.Source;
-    const fullname = customer['Full Name']
-    //console.log("source", source)
-    const dealerMobileNumber = await getDealerMobileNumber(source);
+//   for (const customer of customers) {
+//     const source = customer.Source;
+//     const fullname = customer['Full Name']
+//     //console.log("source", source)
+//     const dealerMobileNumber = await getDealerMobileNumber(source);
     
-    dealerMobileNumbers.push({ source, dealerMobileNumber, fullname });
-  }
-  //console.log('Dealer Mobile Number:', dealerMobileNumbers);
+//     dealerMobileNumbers.push({ source, dealerMobileNumber, fullname });
+//   }
+//   //console.log('Dealer Mobile Number:', dealerMobileNumbers);
 
-  return dealerMobileNumbers;
-}
+//   return dealerMobileNumbers;
+// }
 
-async function getDealerMobileNumber(source) {
-  const sheetId = '44481612';
-  const criteria = `sheet_44481612.column_236="${source}"`;
-  //const apiUrl = `https://pnf.tigersheet.com/api/sheet-api/get-records?sheet_id=${sheetId}&criteria=${encodeURIComponent(criteria)}`;
-  const apiUrl = `https://backendforpnf.vercel.app/dealers?criteria=sheet_44481612.column_236=%22${source}%22`
-  const response = await axios.get(apiUrl);
-  const dealerMobileNumber = response.data.data[0]?.['phone'];
+// async function getDealerMobileNumber(source) {
+//   const sheetId = '44481612';
+//   const criteria = `sheet_44481612.column_236="${source}"`;
+//   //const apiUrl = `https://pnf.tigersheet.com/api/sheet-api/get-records?sheet_id=${sheetId}&criteria=${encodeURIComponent(criteria)}`;
+//   const apiUrl = `https://backendforpnf.vercel.app/dealers?criteria=sheet_44481612.column_236=%22${source}%22`
+//   const response = await axios.get(apiUrl);
+//   const dealerMobileNumber = response.data.data[0]?.['phone'];
 
-  return dealerMobileNumber;
-}
-
-
-
-(async () => {
-  try {
-    const dealerMobileNumbers = await getCustomersWithSanctionedStatus();
-    //console.log('Dealer Mobile Numbers:', dealerMobileNumbers);
-  } catch (error) {
-    console.error('Error:', error.message);
-  }
-})();
+//   return dealerMobileNumber;
+// }
 
 
 
-// async function main() {
-//   try{
-//    const CustomersWithSanctionedStatus =  await getCustomersWithSanctionedStatus();
-//    const lastCustomer = CustomersWithSanctionedStatus[CustomersWithSanctionedStatus.length - 1];
-//    //console.log(lastCustomer.dealerMobileNumber.slice(-10));
-//    const name = lastCustomer.fullname;
-//    //console.log(name)
-//    console.log(CustomersWithSanctionedStatus)
-//    const snapshot = await firestore.collection('dealers').get();
-//    //console.log(snapshot)
-//    const tokens = new Map();
-//    const processedMobiles = new Set();
-//    snapshot.forEach(doc => {
-//     const mobile = doc.id.slice(-10);
-//     //console.log(mobile) // Assuming doc.id contains the full mobile number
-//     const token = doc.data().token;
-//     tokens.set(mobile, token);
-//     });
-//    for (const customer of CustomersWithSanctionedStatus) {
-//     const mobile = customer.dealerMobileNumber.slice(-10);
-//     const name= customer.fullname;
-//     //console.log(name);
-//     //console.log(mobile);
-//         if (processedMobiles.has(mobile)) {
-//           //console.log(`Notification already sent for mobile number: ${mobile}`);
-//           continue; // Skip processing if notification has already been sent
-//       }
-//       if (tokens.has(mobile)) {
-//         const tokenToNotify = tokens.get(mobile);
-//         console.log(tokenToNotify);
-//         const notificationData = {
-//             title: `Loan Approved for ${name}`,
-//             body: `Loan approved for ${name}`,
-//         };
-//           await sendMulticastMessage(notificationData, tokenToNotify);
+// (async () => {
+//   try {
+//     const dealerMobileNumbers = await getCustomersWithSanctionedStatus();
+//     //console.log('Dealer Mobile Numbers:', dealerMobileNumbers);
+//   } catch (error) {
+//     console.error('Error:', error.message);
+//   }
+// })();
+
+
+
+// // async function main() {
+// //   try{
+// //    const CustomersWithSanctionedStatus =  await getCustomersWithSanctionedStatus();
+// //    const lastCustomer = CustomersWithSanctionedStatus[CustomersWithSanctionedStatus.length - 1];
+// //    //console.log(lastCustomer.dealerMobileNumber.slice(-10));
+// //    const name = lastCustomer.fullname;
+// //    //console.log(name)
+// //    console.log(CustomersWithSanctionedStatus)
+// //    const snapshot = await firestore.collection('dealers').get();
+// //    //console.log(snapshot)
+// //    const tokens = new Map();
+// //    const processedMobiles = new Set();
+// //    snapshot.forEach(doc => {
+// //     const mobile = doc.id.slice(-10);
+// //     //console.log(mobile) // Assuming doc.id contains the full mobile number
+// //     const token = doc.data().token;
+// //     tokens.set(mobile, token);
+// //     });
+// //    for (const customer of CustomersWithSanctionedStatus) {
+// //     const mobile = customer.dealerMobileNumber.slice(-10);
+// //     const name= customer.fullname;
+// //     //console.log(name);
+// //     //console.log(mobile);
+// //         if (processedMobiles.has(mobile)) {
+// //           //console.log(`Notification already sent for mobile number: ${mobile}`);
+// //           continue; // Skip processing if notification has already been sent
+// //       }
+// //       if (tokens.has(mobile)) {
+// //         const tokenToNotify = tokens.get(mobile);
+// //         console.log(tokenToNotify);
+// //         const notificationData = {
+// //             title: `Loan Approved for ${name}`,
+// //             body: `Loan approved for ${name}`,
+// //         };
+// //           await sendMulticastMessage(notificationData, tokenToNotify);
           
-//           // Add processed mobile number to Set
-//           processedMobiles.add(mobile);
-//       }
+// //           // Add processed mobile number to Set
+// //           processedMobiles.add(mobile);
+// //       }
 
-//    }
-//   }catch (error) {
-//     console.error('Error:', error);
-// }
+// //    }
+// //   }catch (error) {
+// //     console.error('Error:', error);
+// // }
 
-//    //console.log(getCustomersWithSanctionedStatus);
+// //    //console.log(getCustomersWithSanctionedStatus);
 
-// }
+// // }
+// // async function main() {
+// //   try {
+// //     const CustomersWithSanctionedStatus = await getCustomersWithSanctionedStatus();
+// //     const lastCustomer = CustomersWithSanctionedStatus[CustomersWithSanctionedStatus.length - 1];
+    
+// //     if (!lastCustomer) {
+// //       console.log('No customers found.');
+// //       return;
+// //     }
+    
+// //     const mobile = lastCustomer.dealerMobileNumber.slice(-10);
+// //     const name = lastCustomer.fullname;
+// //     console.log(mobile)
+// //     console.log(name)
+// //     const snapshot = await firestore.collection('dealers').get();
+// //     const tokens = new Map();
+// //     const processedMobiles = new Set();
+// //     snapshot.forEach(doc => {
+// //       const mobile = doc.id.slice(-10);
+// //       const token = doc.data().token;
+// //       tokens.set(mobile, token);
+// //     });
+
+// //     if (processedMobiles.has(mobile)) {
+// //       console.log(`Notification already sent for mobile number: ${mobile}`);
+// //       return;
+// //     }
+
+// //     if (tokens.has(mobile)) {
+// //       const tokenToNotify = tokens.get(mobile);
+// //       const notificationData = {
+// //         title: `Loan Approved for ${name}`,
+// //         body: `Loan approved for ${name}`,
+// //       };
+// //       await sendMulticastMessage(notificationData, tokenToNotify);
+      
+// //       // Add processed mobile number to Set
+// //       processedMobiles.add(mobile);
+// //     }
+// //   } catch (error) {
+// //     console.error('Error:', error);
+// //   }
+// // }
+
 // async function main() {
 //   try {
 //     const CustomersWithSanctionedStatus = await getCustomersWithSanctionedStatus();
 //     const lastCustomer = CustomersWithSanctionedStatus[CustomersWithSanctionedStatus.length - 1];
-    
-//     if (!lastCustomer) {
-//       console.log('No customers found.');
-//       return;
-//     }
-    
+//     console.log(lastCustomer)
 //     const mobile = lastCustomer.dealerMobileNumber.slice(-10);
 //     const name = lastCustomer.fullname;
-//     console.log(mobile)
-//     console.log(name)
+
 //     const snapshot = await firestore.collection('dealers').get();
 //     const tokens = new Map();
-//     const processedMobiles = new Set();
 //     snapshot.forEach(doc => {
 //       const mobile = doc.id.slice(-10);
 //       const token = doc.data().token;
 //       tokens.set(mobile, token);
 //     });
 
-//     if (processedMobiles.has(mobile)) {
-//       console.log(`Notification already sent for mobile number: ${mobile}`);
-//       return;
-//     }
-
 //     if (tokens.has(mobile)) {
 //       const tokenToNotify = tokens.get(mobile);
+//       console.log("token",tokenToNotify)
 //       const notificationData = {
-//         title: `Loan Approved for ${name}`,
+//         title: `Loan Approved `,
 //         body: `Loan approved for ${name}`,
+
 //       };
 //       await sendMulticastMessage(notificationData, tokenToNotify);
-      
-//       // Add processed mobile number to Set
-//       processedMobiles.add(mobile);
+
+//       console.log(`Notification sent for ${name}`);
+//     } else {
+//       console.log(`No token found for mobile number: ${mobile}`);
 //     }
 //   } catch (error) {
 //     console.error('Error:', error);
 //   }
 // }
 
-async function main() {
-  try {
-    const CustomersWithSanctionedStatus = await getCustomersWithSanctionedStatus();
-    const lastCustomer = CustomersWithSanctionedStatus[CustomersWithSanctionedStatus.length - 1];
-    console.log(lastCustomer)
-    const mobile = lastCustomer.dealerMobileNumber.slice(-10);
-    const name = lastCustomer.fullname;
 
-    const snapshot = await firestore.collection('dealers').get();
-    const tokens = new Map();
-    snapshot.forEach(doc => {
-      const mobile = doc.id.slice(-10);
-      const token = doc.data().token;
-      tokens.set(mobile, token);
-    });
-
-    if (tokens.has(mobile)) {
-      const tokenToNotify = tokens.get(mobile);
-      console.log("token",tokenToNotify)
-      const notificationData = {
-        title: `Loan Approved `,
-        body: `Loan approved for ${name}`,
-
-      };
-      await sendMulticastMessage(notificationData, tokenToNotify);
-
-      console.log(`Notification sent for ${name}`);
-    } else {
-      console.log(`No token found for mobile number: ${mobile}`);
-    }
-  } catch (error) {
-    console.error('Error:', error);
-  }
-}
-
-
-app.get('/api/cron', main)
-//main();
+// app.get('/api/cron', main)
+// //main();
 
 app.listen(Port,()=>{
     console.log(`Server is running on ${Port}`);
