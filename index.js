@@ -150,6 +150,7 @@ const dotenv = require('dotenv');
 const _ = require('lodash');
 const bodyParser = require('body-parser');
 const admin = require('firebase-admin');
+const cron = require('node-cron');
 var serviceAccount = require("./dealer-77fe8-firebase-adminsdk-x1y4o-a17271680b.json")
 dotenv.config(); 
 
@@ -571,6 +572,47 @@ async function getCustomersRecords(url, headers, sheetId, criteria) {
 
   return response.data.data;
 }
+
+app.get('/dealers/getUniqueDealers', async (req, res) => {
+  try {
+      const url = process.env.TIGERSHEET_API_URL;
+      const headers = {
+          'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+      };
+      const sheetId = process.env.TIGERSHEET_DEALERS_SHEET_ID;
+      // Get criteria from request query parameters
+      const criteria = req.query.criteria || '';
+      // const uniqueDealers = await getUniqueDealer(url, headers, sheetId, criteria);
+      const uniqueDealers = await getUniqueDealer();
+
+      res.send({ data: uniqueDealers });
+
+  } catch (err) {
+      console.error('Error in fetching data:', err.message);
+      res.status(500).send('Internal Server Error');
+  }
+});
+
+async function getUniqueDealer(){
+  // const response = await axios.post(url, payload, { headers });
+  const response = await axios.get("https://backendforpnf.vercel.app/dealers")
+//console.log('All Records from Tigersheet Backend for Customers', response.data);
+
+  const sourceToMobileNumberMapping = {};
+  // console.log("res:",response);
+  // console.log("dataa:", response.data.data);
+  const dealers = response.data.data;
+  for(const dealer of dealers){
+    sourceToMobileNumberMapping[dealer.dealer] = dealer.phone;
+  }
+  // console.log(sourceToMobileNumberMapping);
+  return sourceToMobileNumberMapping;
+  // const dealerMobileNumber = response.data.data[0]?.['phone'];
+
+}
+
+
 app.get('/customers', async (req, res) => {
   try {
       const url = process.env.TIGERSHEET_API_URL;
@@ -655,40 +697,67 @@ async function getTestLoanRecords(url, headers, sheetId, criteria) {
       'criteria': criteria,
   };
 
+
   const response = await axios.post(url, payload, { headers });
   //console.log('All Records from Tigersheet Backend', response.data);
 
   return response.data.data;
 }
 
-// async function sendMulticastMessage(messageData, tokens) {
-//   console.log(messageData)
-//   try {
-//     const message = {
-//       // notification: messageData, // Custom data for the message
-//       notification:{
-//           title:messageData.title,
-//           body:messageData.body
-//       },
-//       // tokens: tokens, // Array of FCM tokens to send the message to
-//       token: tokens, // Array of FCM tokens to send the message to
-//       android: {
-//           notification: {
-//             // Set priority to high for prompt delivery
-//             priority: 'high',
-//           },
-//         },
-//     };
+async function sendMulticastMessage(messageData, tokens) {
+  //console.log(messageData)
+  try {
+    const message = {
+      // notification: messageData, // Custom data for the message
+      notification:{
+          title:messageData.title,
+          body:messageData.body
+      },
+      // tokens: tokens, // Array of FCM tokens to send the message to
+      token: tokens, // Array of FCM tokens to send the message to
+      android: {
+          notification: {
+            // Set priority to high for prompt delivery
+            priority: 'high',
+          },
+        },
+    };
 
-//   //   const response = await messaging.sendMulticast(message);
-//     const response = await messaging.send(message);
-//    console.log('Successfully sent message:', response);
-//     return response;
-//   } catch (error) {
-//     console.error('Error sending message:', error);
-//     throw error; 
-//   }
-// }
+  //   const response = await messaging.sendMulticast(message);
+    const response = await messaging.send(message);
+   //console.log('Successfully sent message:', response);
+    return response;
+  } catch (error) {
+    console.error('Error sending message:', error);
+    throw error; 
+  }
+}
+
+
+const currentTime = new Date();
+
+// Get the time 30 minutes ago
+const thirtyMinutesAgo = new Date(currentTime.getTime() - 30 * 60000); // 30 minutes * 60 seconds * 1000 milliseconds
+
+// Format the current time with date
+const currentFormattedTime = formatTime(currentTime);
+
+// Format the time 30 minutes ago with date
+const thirtyMinutesAgoFormattedTime = formatTime(thirtyMinutesAgo);
+console.log(`Time 30 minutes ago with date: ${thirtyMinutesAgoFormattedTime}`);
+console.log(`Current time with date: ${currentFormattedTime}`);
+
+
+// Function to format time as "YYYY-MM-DD HH:mm:ss"
+function formatTime(time) {
+    const year = time.getFullYear();
+    const month = String(time.getMonth() + 1).padStart(2, '0');
+    const day = String(time.getDate()).padStart(2, '0');
+    const hours = String(time.getHours()).padStart(2, '0');
+    const minutes = String(time.getMinutes()).padStart(2, '0');
+    const seconds = String(time.getSeconds()).padStart(2, '0');
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
 
 
 
@@ -705,144 +774,108 @@ async function getTestLoanRecords(url, headers, sheetId, criteria) {
 //   }
 
 //   const customers = response.data.data;
-//   //console.log('Customers:', customers);
-
+//   console.log('Customers:', customers);
+   
 //   const dealerMobileNumbers = [];
+
+//   const uniqueDealersResponse = await getUniqueDealer();
+//   //console.log("response:", uniqueDealersResponse);
+
+//   const sourceToMobileNumberMapping = uniqueDealersResponse;
 
 //   for (const customer of customers) {
 //     const source = customer.Source;
 //     const fullname = customer['Full Name']
 //     //console.log("source", source)
-//     const dealerMobileNumber = await getDealerMobileNumber(source);
+//     const dealerMobileNumber = sourceToMobileNumberMapping[source]; 
     
 //     dealerMobileNumbers.push({ source, dealerMobileNumber, fullname });
 //   }
 //   //console.log('Dealer Mobile Number:', dealerMobileNumbers);
 
 //   return dealerMobileNumbers;
-// }
 
-// async function getDealerMobileNumber(source) {
-//   const sheetId = '44481612';
-//   const criteria = `sheet_44481612.column_236="${source}"`;
-//   //const apiUrl = `https://pnf.tigersheet.com/api/sheet-api/get-records?sheet_id=${sheetId}&criteria=${encodeURIComponent(criteria)}`;
-//   const apiUrl = `https://backendforpnf.vercel.app/dealers?criteria=sheet_44481612.column_236=%22${source}%22`
-//   const response = await axios.get(apiUrl);
-//   const dealerMobileNumber = response.data.data[0]?.['phone'];
-
-//   return dealerMobileNumber;
 // }
 
 
+async function getCustomersWithSanctionedStatus() {
+  try {
+    const sheetId = '59283844';
+    const criteria = `sheet_59283844.column_821="sanctioned"`;
 
-// (async () => {
-//   try {
-//     const dealerMobileNumbers = await getCustomersWithSanctionedStatus();
-//     //console.log('Dealer Mobile Numbers:', dealerMobileNumbers);
-//   } catch (error) {
-//     console.error('Error:', error.message);
-//   }
-// })();
+    const apiUrl = `https://backendforpnf.vercel.app/testloans?criteria=${encodeURIComponent(criteria)}`;
+
+    const response = await axios.get(apiUrl);
+
+    if (response.status !== 200) {
+      throw new Error('Failed to fetch data from the API.');
+    }
+
+    const currentTime = new Date();
+    const thirtyMinutesAgo = new Date(currentTime.getTime() - 30 * 60000); // 30 minutes * 60 seconds * 1000 milliseconds
+
+    const currentFormattedTime = formatTime(currentTime);
+    const thirtyMinutesAgoFormattedTime = formatTime(thirtyMinutesAgo);
+    console.log(`Current time with date: ${currentFormattedTime}`);
+    console.log(`Time 30 minutes ago with date: ${thirtyMinutesAgoFormattedTime}`);
+
+    const customers = response.data.data;
+
+    const filteredCustomers = customers.filter(customer => {
+      const lastStatusUpdatedAt = new Date(customer['Last Status Updated At']);
+      return lastStatusUpdatedAt >= thirtyMinutesAgo && lastStatusUpdatedAt <= currentTime;
+    });
+
+    console.log(`Number of customers updated within the last 30 minutes: ${filteredCustomers.length}`);
+
+    const dealerMobileNumbers = [];
+    const uniqueDealersResponse = await getUniqueDealer();
+    const sourceToMobileNumberMapping = uniqueDealersResponse;
+
+    for (const customer of filteredCustomers) {
+      const source = customer.Source;
+      const fullname = customer['Full Name'];
+      const dealerMobileNumber = sourceToMobileNumberMapping[source];
+      dealerMobileNumbers.push({ source, dealerMobileNumber, fullname });
+    }
+
+    return dealerMobileNumbers;
+  } catch (error) {
+    console.error('Error fetching customers:', error.message);
+    return [];
+  }
+}
+
+function formatTime(time) {
+    const year = time.getFullYear();
+    const month = String(time.getMonth() + 1).padStart(2, '0');
+    const day = String(time.getDate()).padStart(2, '0');
+    const hours = String(time.getHours()).padStart(2, '0');
+    const minutes = String(time.getMinutes()).padStart(2, '0');
+    const seconds = String(time.getSeconds()).padStart(2, '0');
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
+// Example usage
+getCustomersWithSanctionedStatus().then(dealerMobileNumbers => {
+  console.log("Dealer Mobile Numbers:", dealerMobileNumbers);
+}).catch(error => {
+  console.error("Error:", error);
+});
 
 
 
-// // async function main() {
-// //   try{
-// //    const CustomersWithSanctionedStatus =  await getCustomersWithSanctionedStatus();
-// //    const lastCustomer = CustomersWithSanctionedStatus[CustomersWithSanctionedStatus.length - 1];
-// //    //console.log(lastCustomer.dealerMobileNumber.slice(-10));
-// //    const name = lastCustomer.fullname;
-// //    //console.log(name)
-// //    console.log(CustomersWithSanctionedStatus)
-// //    const snapshot = await firestore.collection('dealers').get();
-// //    //console.log(snapshot)
-// //    const tokens = new Map();
-// //    const processedMobiles = new Set();
-// //    snapshot.forEach(doc => {
-// //     const mobile = doc.id.slice(-10);
-// //     //console.log(mobile) // Assuming doc.id contains the full mobile number
-// //     const token = doc.data().token;
-// //     tokens.set(mobile, token);
-// //     });
-// //    for (const customer of CustomersWithSanctionedStatus) {
-// //     const mobile = customer.dealerMobileNumber.slice(-10);
-// //     const name= customer.fullname;
-// //     //console.log(name);
-// //     //console.log(mobile);
-// //         if (processedMobiles.has(mobile)) {
-// //           //console.log(`Notification already sent for mobile number: ${mobile}`);
-// //           continue; // Skip processing if notification has already been sent
-// //       }
-// //       if (tokens.has(mobile)) {
-// //         const tokenToNotify = tokens.get(mobile);
-// //         console.log(tokenToNotify);
-// //         const notificationData = {
-// //             title: `Loan Approved for ${name}`,
-// //             body: `Loan approved for ${name}`,
-// //         };
-// //           await sendMulticastMessage(notificationData, tokenToNotify);
-          
-// //           // Add processed mobile number to Set
-// //           processedMobiles.add(mobile);
-// //       }
 
-// //    }
-// //   }catch (error) {
-// //     console.error('Error:', error);
-// // }
 
-// //    //console.log(getCustomersWithSanctionedStatus);
 
-// // }
-// // async function main() {
-// //   try {
-// //     const CustomersWithSanctionedStatus = await getCustomersWithSanctionedStatus();
-// //     const lastCustomer = CustomersWithSanctionedStatus[CustomersWithSanctionedStatus.length - 1];
-    
-// //     if (!lastCustomer) {
-// //       console.log('No customers found.');
-// //       return;
-// //     }
-    
-// //     const mobile = lastCustomer.dealerMobileNumber.slice(-10);
-// //     const name = lastCustomer.fullname;
-// //     console.log(mobile)
-// //     console.log(name)
-// //     const snapshot = await firestore.collection('dealers').get();
-// //     const tokens = new Map();
-// //     const processedMobiles = new Set();
-// //     snapshot.forEach(doc => {
-// //       const mobile = doc.id.slice(-10);
-// //       const token = doc.data().token;
-// //       tokens.set(mobile, token);
-// //     });
-
-// //     if (processedMobiles.has(mobile)) {
-// //       console.log(`Notification already sent for mobile number: ${mobile}`);
-// //       return;
-// //     }
-
-// //     if (tokens.has(mobile)) {
-// //       const tokenToNotify = tokens.get(mobile);
-// //       const notificationData = {
-// //         title: `Loan Approved for ${name}`,
-// //         body: `Loan approved for ${name}`,
-// //       };
-// //       await sendMulticastMessage(notificationData, tokenToNotify);
-      
-// //       // Add processed mobile number to Set
-// //       processedMobiles.add(mobile);
-// //     }
-// //   } catch (error) {
-// //     console.error('Error:', error);
-// //   }
-// // }
-
-// async function main() {
+async function main() {
+  //const CustomersWithSanctionedStatus = await getCustomersWithSanctionedStatus();
+//   //const res = await getUniqueDealer()
+//   //console.log("source to mobile mappping:", res);
 //   try {
 //     const CustomersWithSanctionedStatus = await getCustomersWithSanctionedStatus();
 //     const lastCustomer = CustomersWithSanctionedStatus[CustomersWithSanctionedStatus.length - 1];
-//     console.log(lastCustomer)
+//     //console.log(lastCustomer)
 //     const mobile = lastCustomer.dealerMobileNumber.slice(-10);
 //     const name = lastCustomer.fullname;
 
@@ -856,7 +889,7 @@ async function getTestLoanRecords(url, headers, sheetId, criteria) {
 
 //     if (tokens.has(mobile)) {
 //       const tokenToNotify = tokens.get(mobile);
-//       console.log("token",tokenToNotify)
+//       //console.log("token",tokenToNotify)
 //       const notificationData = {
 //         title: `Loan Approved `,
 //         body: `Loan approved for ${name}`,
@@ -864,18 +897,52 @@ async function getTestLoanRecords(url, headers, sheetId, criteria) {
 //       };
 //       await sendMulticastMessage(notificationData, tokenToNotify);
 
-//       console.log(`Notification sent for ${name}`);
+//       //console.log(`Notification sent for ${name}`);
 //     } else {
 //       console.log(`No token found for mobile number: ${mobile}`);
 //     }
 //   } catch (error) {
 //     console.error('Error:', error);
 //   }
-// }
+try {
+  const dealerMobileNumbers = await getCustomersWithSanctionedStatus();
 
+  for (const customer of dealerMobileNumbers) {
+    const mobile = customer.dealerMobileNumber.slice(-10);
+    const name = customer.fullname;
 
-// app.get('/api/cron', main)
-// //main();
+    const snapshot = await firestore.collection('dealers').get();
+    const tokens = new Map();
+    snapshot.forEach(doc => {
+      const dealerMobile = doc.id.slice(-10);
+      const token = doc.data().token;
+      tokens.set(dealerMobile, token);
+    });
+
+    if (tokens.has(mobile)) {
+      const tokenToNotify = tokens.get(mobile);
+      const notificationData = {
+        title: `Loan Approved `,
+        body: `Loan approved for ${name}`,
+      };
+      await sendMulticastMessage(notificationData, tokenToNotify);
+      console.log(`Notification sent for ${name}`);
+    } else {
+      console.log(`No token found for mobile number: ${mobile}`);
+    }
+  }
+} catch (error) {
+  console.error('Error:', error);
+}
+
+}
+
+//setInterval(main, 20000);
+// const intervalInMinutes = 30;
+// const intervalInMilliseconds = intervalInMinutes * 60 * 1000;
+// setInterval(main, intervalInMilliseconds);
+// main();
+app.get('/api/cron', main)
 
 app.listen(Port,()=>{
     console.log(`Server is running on ${Port}`);
