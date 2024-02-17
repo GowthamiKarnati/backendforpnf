@@ -674,6 +674,7 @@ async function getVehicleRecords(url, headers, sheetId, criteria) {
   return response.data.data;
 }
 app.get('/testloans', async (req, res) => {
+  console.log("r test loans request",req)
   try {
       const url = process.env.TIGERSHEET_API_URL;
       const headers = {
@@ -684,9 +685,10 @@ app.get('/testloans', async (req, res) => {
       // Get criteria from request query parameters
       const criteria = req.query.criteria || '';
       const testLoanRecords = await getTestLoanRecords(url, headers, sheetId, criteria);
+      console.log('testloans',testLoanRecords)
       res.send({ data: testLoanRecords });
   } catch (err) {
-      console.error('Error in fetching data:', err.message);
+      console.error('Error in fetching data: test loans', err.message);
       res.status(500).send('Internal Server Error');
   }
 });
@@ -703,6 +705,40 @@ async function getTestLoanRecords(url, headers, sheetId, criteria) {
 
   return response.data.data;
 }
+
+app.post('/workflow', async (req, res) => {
+  const source = req.body.loan_id;
+  const name =  req.body.name;
+  const mobilenumber =  req.body.mobilenumber;
+  const dealer =  req.body.source;
+  //console.log("loanid is requires", source)
+  //console.log("name", name);
+  ////console.log("mobile number", mobilenumber)
+  //console.log("dealer", dealer)
+  try {
+    await main(source, name, mobilenumber, dealer);
+    res.json({ message: 'Main function called successfully' });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'An error occurred while calling main function' });
+  }
+  
+});
+
+// async function getDealerMobileNumber(source, name, mobilenumber, dealer){
+//    try{
+//     console.log(source, name)
+//     const uniqueDealersResponse = await getUniqueDealer();
+//     const sourceToMobileNumberMapping = uniqueDealersResponse;
+//     //console.log(sourceToMobileNumberMapping)
+//     const sourceMobileNumber = sourceToMobileNumberMapping[source];
+//     console.log(sourceMobileNumber)
+//     return { sourceMobileNumber, name };
+//    }catch (error) {
+//     console.error('Error fetching customers:', error.message);
+//    }
+// }
+
 
 async function sendMulticastMessage(messageData, tokens) {
   //console.log(messageData)
@@ -732,33 +768,6 @@ async function sendMulticastMessage(messageData, tokens) {
     throw error; 
   }
 }
-
-
-const currentTime = new Date();
-
-// Get the time 30 minutes ago
-const thirtyMinutesAgo = new Date(currentTime.getTime() - 30 * 60000); // 30 minutes * 60 seconds * 1000 milliseconds
-
-// Format the current time with date
-const currentFormattedTime = formatTime(currentTime);
-
-// Format the time 30 minutes ago with date
-const thirtyMinutesAgoFormattedTime = formatTime(thirtyMinutesAgo);
-console.log(`Time 30 minutes ago with date: ${thirtyMinutesAgoFormattedTime}`);
-console.log(`Current time with date: ${currentFormattedTime}`);
-
-
-// Function to format time as "YYYY-MM-DD HH:mm:ss"
-function formatTime(time) {
-    const year = time.getFullYear();
-    const month = String(time.getMonth() + 1).padStart(2, '0');
-    const day = String(time.getDate()).padStart(2, '0');
-    const hours = String(time.getHours()).padStart(2, '0');
-    const minutes = String(time.getMinutes()).padStart(2, '0');
-    const seconds = String(time.getSeconds()).padStart(2, '0');
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-}
-
 
 
 // async function getCustomersWithSanctionedStatus() {
@@ -798,77 +807,77 @@ function formatTime(time) {
 // }
 
 
-async function getCustomersWithSanctionedStatus() {
-  try {
-    const sheetId = '59283844';
-    const criteria = `sheet_59283844.column_821="sanctioned"`;
+// async function getCustomersWithSanctionedStatus() {
+//   try {
+//     const sheetId = '59283844';
+//     const criteria = `sheet_59283844.column_821="sanctioned"`;
 
-    const apiUrl = `https://backendforpnf.vercel.app/testloans?criteria=${encodeURIComponent(criteria)}`;
+//     const apiUrl = `https://backendforpnf.vercel.app/testloans?criteria=${encodeURIComponent(criteria)}`;
 
-    const response = await axios.get(apiUrl);
+//     const response = await axios.get(apiUrl);
+    
+//     if (response.status !== 200) {
+//       throw new Error('Failed to fetch data from the API.');
+//     }
 
-    if (response.status !== 200) {
-      throw new Error('Failed to fetch data from the API.');
-    }
+//     const currentTime = new Date();
+//     const thirtyMinutesAgo = new Date(currentTime.getTime() - 30 * 60000); // 30 minutes * 60 seconds * 1000 milliseconds
 
-    const currentTime = new Date();
-    const thirtyMinutesAgo = new Date(currentTime.getTime() - 30 * 60000); // 30 minutes * 60 seconds * 1000 milliseconds
+//     const currentFormattedTime = formatTime(currentTime);
+//     const thirtyMinutesAgoFormattedTime = formatTime(thirtyMinutesAgo);
+//     //console.log(`Current time with date: ${currentFormattedTime}`);
+//     //console.log(`Time 30 minutes ago with date: ${thirtyMinutesAgoFormattedTime}`);
 
-    const currentFormattedTime = formatTime(currentTime);
-    const thirtyMinutesAgoFormattedTime = formatTime(thirtyMinutesAgo);
-    console.log(`Current time with date: ${currentFormattedTime}`);
-    console.log(`Time 30 minutes ago with date: ${thirtyMinutesAgoFormattedTime}`);
+//     const customers = response.data.data;
 
-    const customers = response.data.data;
+//     const filteredCustomers = customers.filter(customer => {
+//       const lastStatusUpdatedAt = new Date(customer['Last Status Updated At']);
+//       return lastStatusUpdatedAt >= thirtyMinutesAgo && lastStatusUpdatedAt <= currentTime;
+//     });
 
-    const filteredCustomers = customers.filter(customer => {
-      const lastStatusUpdatedAt = new Date(customer['Last Status Updated At']);
-      return lastStatusUpdatedAt >= thirtyMinutesAgo && lastStatusUpdatedAt <= currentTime;
-    });
+//     //console.log(`Number of customers updated within the last 30 minutes: ${filteredCustomers.length}`);
 
-    console.log(`Number of customers updated within the last 30 minutes: ${filteredCustomers.length}`);
+//     const dealerMobileNumbers = [];
+//     const uniqueDealersResponse = await getUniqueDealer();
+//     const sourceToMobileNumberMapping = uniqueDealersResponse;
 
-    const dealerMobileNumbers = [];
-    const uniqueDealersResponse = await getUniqueDealer();
-    const sourceToMobileNumberMapping = uniqueDealersResponse;
+//     for (const customer of filteredCustomers) {
+//       const source = customer.Source;
+//       const fullname = customer['Full Name'];
+//       const dealerMobileNumber = sourceToMobileNumberMapping[source];
+//       dealerMobileNumbers.push({ source, dealerMobileNumber, fullname });
+//     }
 
-    for (const customer of filteredCustomers) {
-      const source = customer.Source;
-      const fullname = customer['Full Name'];
-      const dealerMobileNumber = sourceToMobileNumberMapping[source];
-      dealerMobileNumbers.push({ source, dealerMobileNumber, fullname });
-    }
+//     return dealerMobileNumbers;
+//   } catch (error) {
+//     console.error('Error fetching customers:', error.message);
+//     return [];
+//   }
+// }
 
-    return dealerMobileNumbers;
-  } catch (error) {
-    console.error('Error fetching customers:', error.message);
-    return [];
-  }
-}
+// function formatTime(time) {
+//     const year = time.getFullYear();
+//     const month = String(time.getMonth() + 1).padStart(2, '0');
+//     const day = String(time.getDate()).padStart(2, '0');
+//     const hours = String(time.getHours()).padStart(2, '0');
+//     const minutes = String(time.getMinutes()).padStart(2, '0');
+//     const seconds = String(time.getSeconds()).padStart(2, '0');
+//     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+// }
 
-function formatTime(time) {
-    const year = time.getFullYear();
-    const month = String(time.getMonth() + 1).padStart(2, '0');
-    const day = String(time.getDate()).padStart(2, '0');
-    const hours = String(time.getHours()).padStart(2, '0');
-    const minutes = String(time.getMinutes()).padStart(2, '0');
-    const seconds = String(time.getSeconds()).padStart(2, '0');
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-}
-
-// Example usage
-getCustomersWithSanctionedStatus().then(dealerMobileNumbers => {
-  console.log("Dealer Mobile Numbers:", dealerMobileNumbers);
-}).catch(error => {
-  console.error("Error:", error);
-});
-
-
+// // Example usage
+// getCustomersWithSanctionedStatus().then(dealerMobileNumbers => {
+//   //console.log("Dealer Mobile Numbers:", dealerMobileNumbers);
+// }).catch(error => {
+//   console.error("Error:", error);
+// });
 
 
 
 
-async function main() {
+
+
+// async function main() {
   //const CustomersWithSanctionedStatus = await getCustomersWithSanctionedStatus();
 //   //const res = await getUniqueDealer()
 //   //console.log("source to mobile mappping:", res);
@@ -904,46 +913,93 @@ async function main() {
 //   } catch (error) {
 //     console.error('Error:', error);
 //   }
-try {
-  const dealerMobileNumbers = await getCustomersWithSanctionedStatus();
+// try {
+//   const dealerMobileNumbers = await getCustomersWithSanctionedStatus();
 
-  for (const customer of dealerMobileNumbers) {
-    const mobile = customer.dealerMobileNumber.slice(-10);
-    const name = customer.fullname;
+//   for (const customer of dealerMobileNumbers) {
+//     const mobile = customer?.dealerMobileNumber?.slice(-10);
+//     const name = customer.fullname;
 
-    const snapshot = await firestore.collection('dealers').get();
-    const tokens = new Map();
-    snapshot.forEach(doc => {
-      const dealerMobile = doc.id.slice(-10);
-      const token = doc.data().token;
-      tokens.set(dealerMobile, token);
-    });
+//     const snapshot = await firestore.collection('dealers').get();
+//     const tokens = new Map();
+//     snapshot.forEach(doc => {
+//       const dealerMobile = doc.id.slice(-10);
+//       const token = doc.data().token;
+//       tokens.set(dealerMobile, token);
+//     });
 
-    if (tokens.has(mobile)) {
-      const tokenToNotify = tokens.get(mobile);
-      const notificationData = {
-        title: `Loan Approved `,
-        body: `Loan approved for ${name}`,
-      };
-      await sendMulticastMessage(notificationData, tokenToNotify);
-      console.log(`Notification sent for ${name}`);
-    } else {
-      console.log(`No token found for mobile number: ${mobile}`);
-    }
-  }
-} catch (error) {
-  console.error('Error:', error);
-}
+//     if (tokens.has(mobile)) {
+//       const tokenToNotify = tokens.get(mobile);
+//       const notificationData = {
+//         title: `Loan Approved `,
+//         body: `Loan approved for ${name}`,
+//       };
+//       await sendMulticastMessage(notificationData, tokenToNotify);
+//       console.log(`Notification sent for ${name}`);
+//     } else {
+//       console.log(`No token found for mobile number: ${mobile}`);
+//     }
+//   }
+// } catch (error) {
+//   console.error('Error:', error);
+// }
 
-}
+// }
 
 //setInterval(main, 20000);
 // const intervalInMinutes = 30;
 // const intervalInMilliseconds = intervalInMinutes * 60 * 1000;
+// console.log(intervalInMilliseconds)
 // setInterval(main, intervalInMilliseconds);
-// main();
-app.get('/api/cron', main)
+ //main();
+//app.get('/api/cron', main)
 
+
+async function main(source, name, mobilenumber, dealer) {
+  try {
+    // Your main function logic here...
+    console.log('Source:', source);
+    console.log('Name:', name);
+    console.log('Mobile Number:', mobilenumber);
+    console.log('Dealer:', dealer);
+
+    const uniqueDealersResponse = await getUniqueDealer();
+    const sourceToMobileNumberMapping = uniqueDealersResponse;
+    //console.log(sourceToMobileNumberMapping)
+    const sourceMobileNumber = sourceToMobileNumberMapping[source];
+    console.log(sourceMobileNumber);
+    const mobile = sourceMobileNumber.slice(-10);
+    const snapshot = await firestore.collection('dealers').get();
+    const tokens = new Map();
+    snapshot.forEach(doc => {
+      const mobile = doc.id.slice(-10);
+      const token = doc.data().token;
+      tokens.set(mobile, token);
+    });
+
+    if (tokens.has(mobile)) {
+      const tokenToNotify = tokens.get(mobile);
+      //console.log("token",tokenToNotify)
+      const notificationData = {
+        title: `Loan Approved `,
+        body: `Loan approved for ${name}`,
+
+      };
+      await sendMulticastMessage(notificationData, tokenToNotify);
+
+      console.log(`Notification sent for ${name}`);
+    } else {
+      console.log(`No token found for mobile number: ${mobile}`);
+    }
+
+
+
+  } catch (error) {
+    console.error('Error in main function:', error);
+    throw error; // Rethrow the error to handle it in the route handler if needed
+  }
+}
+//main();
 app.listen(Port,()=>{
     console.log(`Server is running on ${Port}`);
 });
