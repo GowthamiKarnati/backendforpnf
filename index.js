@@ -757,6 +757,10 @@ async function sendMulticastMessage(messageData, tokens) {
             priority: 'high',
           },
         },
+        data:{
+          name:messageData.name,
+          mobilenumber: messageData.mobilenumber
+        }
     };
 
   //   const response = await messaging.sendMulticast(message);
@@ -983,6 +987,8 @@ async function main(source, name, mobilenumber, dealer) {
       const notificationData = {
         title: `Loan Approved `,
         body: `Loan approved for ${name}`,
+        mobilenumber : `${mobilenumber}`,
+        name :`${name}`
 
       };
       await sendMulticastMessage(notificationData, tokenToNotify);
