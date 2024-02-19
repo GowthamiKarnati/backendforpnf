@@ -705,6 +705,33 @@ async function getTestLoanRecords(url, headers, sheetId, criteria) {
 
   return response.data.data;
 }
+app.get('/loanapplication', async (req, res) => {
+  try {
+    const url = process.env.TIGERSHEET_API_URL;
+    const headers = {
+      'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
+      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+    };
+    const sheetId = process.env.TIGERSHEET_LOAN_APPLICATION_SHEET_ID; // Use the environment variable
+    const criteria = req.query.criteria || '';
+    const loanApplicationRecords = await getLoanRecords(url, headers, sheetId, criteria);
+    console.log('Loan application records:', loanApplicationRecords);
+    res.send({ data: loanApplicationRecords });
+  } catch (err) {
+    console.error('Error in fetching loan application data:', err.message);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+async function getLoanRecords(url, headers, sheetId, criteria) {
+  const payload = {
+    'sheet_id': sheetId,
+    'criteria': criteria,
+  };
+
+  const response = await axios.post(url, payload, { headers });
+  return response.data.data;
+}
 
 app.post('/workflow', async (req, res) => {
   const source = req.body.loan_id;
@@ -716,7 +743,7 @@ app.post('/workflow', async (req, res) => {
   ////console.log("mobile number", mobilenumber)
   //console.log("dealer", dealer)
   try {
-    await main(source, name, mobilenumber, dealer);
+    await main(source, name, mobilenumber);
     res.json({ message: 'Main function called successfully' });
   } catch (error) {
     console.error('Error:', error);
@@ -724,21 +751,6 @@ app.post('/workflow', async (req, res) => {
   }
   
 });
-
-// async function getDealerMobileNumber(source, name, mobilenumber, dealer){
-//    try{
-//     console.log(source, name)
-//     const uniqueDealersResponse = await getUniqueDealer();
-//     const sourceToMobileNumberMapping = uniqueDealersResponse;
-//     //console.log(sourceToMobileNumberMapping)
-//     const sourceMobileNumber = sourceToMobileNumberMapping[source];
-//     console.log(sourceMobileNumber)
-//     return { sourceMobileNumber, name };
-//    }catch (error) {
-//     console.error('Error fetching customers:', error.message);
-//    }
-// }
-
 
 async function sendMulticastMessage(messageData, tokens) {
   //console.log(messageData)
@@ -959,7 +971,7 @@ async function sendMulticastMessage(messageData, tokens) {
 //app.get('/api/cron', main)
 
 
-async function main(source, name, mobilenumber, dealer) {
+async function main(source, name, mobilenumber) {
   try {
     // Your main function logic here...
     console.log('Source:', source);
