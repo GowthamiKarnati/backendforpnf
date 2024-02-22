@@ -181,6 +181,130 @@ async function gettruckRecords(url, headers, sheetId,criteria) {
   
     return response.data.data;
 }
+
+
+
+//   app.get('/customers', async (req, res) => {
+//     try {
+//         const url = process.env.TIGERSHEET_API_URL;
+//         const headers = {
+//             'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
+//             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+//         };
+//         const sheetId = process.env.TIGERSHEET_CUSTOMERS_SHEET_ID;
+//         // Get criteria from request query parameters
+//         const criteria = req.query.criteria || '';
+//         const customersRecords = await getCustomersRecords(url, headers, sheetId, criteria);
+//         res.send({ data: customersRecords });
+
+//     } catch (err) {
+//         console.error('Error in fetching data:', err.message);
+//         res.status(500).send('Internal Server Error');
+//     }
+// });
+
+// async function getCustomersRecords(url, headers, sheetId, criteria) {
+//     const payload = {
+//         'sheet_id': sheetId,
+//         'criteria': criteria,
+//     };
+
+//     const response = await axios.post(url, payload, { headers });
+//     console.log('All Records from Tigersheet Backend for Customers', response.data);
+
+//     return response.data.data;
+// }
+
+
+
+
+
+// app.post("/create",async (req,res)=>{
+//   try{
+//       const url=process.env.TIGERSHEET_API_CREATE_URL;
+//       const headers={
+//           'Authorization':'C9B53439FA03FB946C93E9AC9963070B221EC0E3CD66399A',
+//           'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+//       }
+//       const sheetId = 30273103
+      
+//       const data = JSON.stringify({"30526":{"value":"9"}, "30527":{"value":"good year"}, "30528":{"value":"1000"}, "31816":{"value":"SADANAND AMLE"}, "31817":{"value":"BSVPA5781Q"}, "31818":{"value":"+919130858727"}, "31819":{"value":"+917020490374"},"32046": { "value": "Married" },
+//       "32047": { "value": 2 },
+//       "32048": { "value": "Bungalow" },
+//       "32049": { "value": "ABC123" },
+//       "32050": { "value": "2024-01-24" },
+//       "32051": { "value": "Online" }});
+//       const tyreData= await getTyreData(url,headers,sheetId,data);
+//       console.log('TyreData: ', tyreData)
+
+//       res.send({data:tyreData})
+      
+//   }catch(err){
+//       console.error('Error in fetching data:', err.message);
+//       res.status(500).send('Internal Server Error');
+//   }
+// });
+
+// async function getTyreData(url,headers,sheetId,data){
+//   const payload={
+//       'sheet_id':sheetId,
+//       'data':data
+//   }
+//   const response = await axios.post(url, payload, { headers });
+//   console.log('All Records from Tigersheet Backend', response.data);
+
+//   return response.data;
+//  }
+// app.post("/create", async (req, res) => {
+//   try {
+//     const url = process.env.TIGERSHEET_API_CREATE_URL;
+//     const headers = {
+//       'Authorization': 'C9B53439FA03FB946C93E9AC9963070B221EC0E3CD66399A',
+//       'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+//     };
+//     const sheetId = 30273103;
+
+//     // Extract data from the request body
+//     const { numberOfTires, selectedBrand, loanAmount, name, pan, mobilenumber, alternatemobile, martialstatus, numofchildren, housetype, trucknumber, date, source,numberoftrucks } = req.body;
+
+
+//      const data = JSON.stringify({
+//       "30526": { "value": numberOfTires },
+//       "30527": { "value": selectedBrand },
+//       "30528": { "value": loanAmount },
+//       "31816": { "value": name },
+//       "31817": { "value": pan },
+//       "31818": { "value": mobilenumber },
+//       "31819": { "value": alternatemobile },
+//       "32046": { "value": martialstatus },
+//       "32047": { "value": numofchildren },
+//       "32048": { "value": housetype },
+//       "32049": { "value": trucknumber },
+//       "32050": { "value": date },
+//       "32051": { "value": source },
+//       "32053": {"value": numberoftrucks}
+//     });
+
+//     const tyreData = await getTyreData(url, headers, sheetId, data);
+//     console.log('TyreData:', tyreData);
+
+//     res.send({ data: tyreData });
+
+//   } catch (err) {
+//     console.error('Error in fetching data:', err.message);
+//     res.status(500).send('Internal Server Error');
+//   }
+// });
+// async function getTyreData(url, headers, sheetId, data) {
+//   const payload = {
+//     'sheet_id': sheetId,
+//     'data': data
+//   }
+//   const response = await axios.post(url, payload, { headers });
+//   console.log('All Records from Tigersheet Backend', response.data);
+
+//   return response.data;
+// }
 app.post("/create", async (req, res) => {
   try {
     const url = process.env.TIGERSHEET_API_CREATE_URL;
@@ -242,7 +366,42 @@ async function getTyreData(url, headers, sheetId, data) {
 
   return response.data;
 }
+app.post("/updateKyc", async (req, res) => {
+  try {
+    const url = process.env.TIGERSHEET_API_UPDATE_URL;
+    const headers = {
+      'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
+      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+    };
+    const sheetId = 42284627;
+    const {record_id,dob} = req.body;
+    const recordId = record_id;
+     const data = JSON.stringify({
+      "1091":{
+        "value":dob
+      }
+      
+    });
+    const UpdateData = await getUpdateData(url, headers, sheetId,recordId, data);
 
+    res.send({ data: UpdateData });
+
+  } catch (err) {
+    console.error('Error in fetching data:', err.message);
+    res.status(500).send('Internal Server Error');
+  }
+});
+async function getUpdateData(url, headers, sheetId,recordId, data) {
+  const payload = {
+    'sheet_id': sheetId,
+    'record_id': recordId,
+    'data': data,
+  }
+  const response = await axios.post(url, payload, { headers });
+  //console.log('All Records from Tigersheet Backend', response.data);
+
+  return response.data;
+}
 
 app.get('/customerKyc', async (req, res) => {
   try {
@@ -342,6 +501,7 @@ async function getUniqueDealer(){
   // const dealerMobileNumber = response.data.data[0]?.['phone'];
 
 }
+
 
 
 app.get('/customers', async (req, res) => {
@@ -464,11 +624,16 @@ async function getLoanRecords(url, headers, sheetId, criteria) {
   return response.data.data;
 }
 
+
+
+
+
+
 app.post('/workflow', async (req, res) => {
   const source = req.body.loan_id;
   const name =  req.body.name;
   const mobilenumber =  req.body.mobilenumber;
-  
+  const dealer =  req.body.source;
   //console.log("loanid is requires", source)
   //console.log("name", name);
   ////console.log("mobile number", mobilenumber)
@@ -515,13 +680,14 @@ async function sendMulticastMessage(messageData, tokens) {
     throw error; 
   }
 }
+
 async function main(source, name, mobilenumber) {
   try {
     // Your main function logic here...
     console.log('Source:', source);
     console.log('Name:', name);
     console.log('Mobile Number:', mobilenumber);
-    
+    console.log('Dealer:', dealer);
 
     const uniqueDealersResponse = await getUniqueDealer();
     const sourceToMobileNumberMapping = uniqueDealersResponse;
@@ -562,6 +728,10 @@ async function main(source, name, mobilenumber) {
   }
 }
 //main();
+
+
+
+
 app.listen(Port,()=>{
     console.log(`Server is running on ${Port}`);
 });
