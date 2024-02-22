@@ -424,27 +424,82 @@ app.post("/updateKyc", async (req, res) => {
       'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
     };
     const sheetId = 42284627;
-    const { record_id, dob, pan, noofchildren, monthlyemioutflow, housetype, noofyearsinbusiness } = req.body;
+    const { record_id, dob } = req.body;
     const recordId = record_id;
     const data = JSON.stringify({
       "1091": {
         "value": dob
       },
+    });
+    const UpdateData = await getUpdateData(url, headers, sheetId, recordId, data);
+
+    res.send({ data: UpdateData });
+
+  } catch (err) {
+    console.error('Error in updating data:', err.message);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+async function getUpdateData(url, headers, sheetId, recordId, data) {
+  const payload = {
+    'sheet_id': sheetId,
+    'record_id': recordId,
+    'data': data,
+  }
+  const response = await axios.post(url, payload, { headers });
+
+  return response.data;
+}
+app.post("/updatePan", async (req, res) => {
+  try {
+    const url = process.env.TIGERSHEET_API_UPDATE_URL;
+    const headers = {
+      'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
+      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+    };
+    const sheetId = 42284627;
+    const { record_id, pan } = req.body;
+    const recordId = record_id;
+    const data = JSON.stringify({
       "1090": {
         "value": pan
       },
+    });
+    const UpdateData = await getUpdateData(url, headers, sheetId, recordId, data);
+
+    res.send({ data: UpdateData });
+
+  } catch (err) {
+    console.error('Error in updating data:', err.message);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+async function getUpdateData(url, headers, sheetId, recordId, data) {
+  const payload = {
+    'sheet_id': sheetId,
+    'record_id': recordId,
+    'data': data,
+  }
+  const response = await axios.post(url, payload, { headers });
+
+  return response.data;
+}
+app.post("/updateChildren", async (req, res) => {
+  try {
+    const url = process.env.TIGERSHEET_API_UPDATE_URL;
+    const headers = {
+      'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
+      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+    };
+    const sheetId = 42284627;
+    const { record_id, noofchildren } = req.body;
+    const recordId = record_id;
+    const data = JSON.stringify({
       "1093": {
         "value": noofchildren
       },
-      "1094": {
-        "value": monthlyemioutflow
-      },
-      "1096": {
-        "value": housetype
-      },
-      "1101": {
-        "value": noofyearsinbusiness
-      }
     });
     const UpdateData = await getUpdateData(url, headers, sheetId, recordId, data);
 
