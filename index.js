@@ -466,6 +466,41 @@ async function getUpdateData(url, headers, sheetId,recordId, data) {
 
   return response.data;
 }
+app.post("/updatePhoto", async (req, res) => {
+  try {
+    const url = process.env.TIGERSHEET_API_UPDATE_URL;
+    const headers = {
+      'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
+      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+    };
+    const sheetId = 42284627;
+    const {record_id,photo} = req.body;
+    const recordId = record_id;
+     const data = JSON.stringify({
+      "1088":{
+        "value":photo
+      }
+    });
+    const UpdateData = await getUpdateData(url, headers, sheetId,recordId, data);
+
+    res.send({ data: UpdateData });
+
+  } catch (err) {
+    console.error('Error in fetching data:', err.message);
+    res.status(500).send('Internal Server Error');
+  }
+});
+async function getUpdateData(url, headers, sheetId,recordId, data) {
+  const payload = {
+    'sheet_id': sheetId,
+    'record_id': recordId,
+    'data': data,
+  }
+  const response = await axios.post(url, payload, { headers });
+  //console.log('All Records from Tigersheet Backend', response.data);
+
+  return response.data;
+}
 
 app.get('/customerKyc', async (req, res) => {
   try {
