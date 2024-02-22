@@ -474,11 +474,15 @@ app.post("/updatePhoto", async (req, res) => {
       'Content-Type': 'multipart/image'
     };
     const sheetId = 42284627;
-    const {record_id,photo} = req.body;
+    const {record_id,image} = req.body;
+    console.log(image)
     const recordId = record_id;
+    const duumy = `[{\"name\":\"${image}\"}]`
+    // console.log(duumy)
      const data = JSON.stringify({
       "1088":{
-        "value":photo
+        "value":image
+        // "value": `[{\"name\":\"photo.jpg\",\"filepath\":\"${image}\",\"fullpath\":\"http://tigersheet.s3.amazonaws.com/${image}\",\"is_new\":true,\"size\":\"\"}]`
       }
     });
     const UpdateData = await getUpdateData(url, headers, sheetId,recordId, data);
@@ -786,7 +790,6 @@ async function main(source, name, mobilenumber) {
     console.log('Source:', source);
     console.log('Name:', name);
     console.log('Mobile Number:', mobilenumber);
-    console.log('Dealer:', dealer);
 
     const uniqueDealersResponse = await getUniqueDealer();
     const sourceToMobileNumberMapping = uniqueDealersResponse;
