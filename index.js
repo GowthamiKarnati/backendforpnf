@@ -471,7 +471,7 @@ app.post("/updatePhoto", async (req, res) => {
     const url = process.env.TIGERSHEET_API_UPDATE_URL;
     const headers = {
       'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
-      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+      'Content-Type': 'multipart/form-data'
     };
     const sheetId = 42284627;
     const {record_id,photo} = req.body;
