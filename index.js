@@ -374,31 +374,14 @@ app.post("/updatedob", async (req, res) => {
       'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
     };
     const sheetId = 42284627;
-    const {record_id,dob,pan,noofchildren,monthlyemioutflow, housetype,noofyearsinbusiness} = req.body;
+    const {record_id, dob} =  req.body;
     const recordId = record_id;
-
-
     
     
 
      const data = JSON.stringify({
       "1091": {
         "value": dob
-      },
-      "1090":{
-        "value":pan
-      },
-      "1093":{
-        "value":noofchildren
-      },
-      "1094":{
-        "value":monthlyemioutflow
-      },
-      "1096":{
-        "value":housetype
-      },
-      "1101":{
-        "value":noofyearsinbusiness
       }
     });
     
