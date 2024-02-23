@@ -6,6 +6,7 @@ const _ = require('lodash');
 const bodyParser = require('body-parser');
 const admin = require('firebase-admin');
 const cron = require('node-cron');
+const Emiroutes =  require('./routes/Emiroutes')
 var serviceAccount = require("./dealer-77fe8-firebase-adminsdk-x1y4o-a17271680b.json")
 dotenv.config(); 
 
@@ -61,36 +62,7 @@ async function getcdloansRecords(url, headers, sheetId,criteria) {
     return response.data.data;
   }
 
-app.get('/emi',async (req,res)=>{
-    try{
-        const url = process.env.TIGERSHEET_API_URL;
-        const headers = {
-        'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-        };
-        const sheetId = process.env.TIGERSHEET_EMI_SHEET_ID;
-        // Get criteria from request query parameters
-        const criteria = req.query.criteria || '';
-        const emiRecords = await getemiRecords(url, headers, sheetId,criteria);
-        res.send({data:emiRecords})
-
-    }catch(err){
-        console.error('Error in fetching data:', err.message);
-        res.status(500).send('Internal Server Error');
-    }
-})
-
-async function getemiRecords(url, headers, sheetId,criteria) {
-    const payload = {
-      'sheet_id': sheetId,
-      'criteria': criteria,
-    };
-  
-    const response = await axios.post(url, payload, { headers });
-    console.log('All Records from Tigersheet Backend', response.data);
-  
-    return response.data.data;
-  }
+app.use('/emi', Emiroutes)
   app.get('/tyreloans', async (req, res) => {
     try {
       const url = process.env.TIGERSHEET_API_URL;
