@@ -6,7 +6,10 @@ const _ = require('lodash');
 const bodyParser = require('body-parser');
 const admin = require('firebase-admin');
 const cron = require('node-cron');
-const Emiroutes =  require('./routes/Emiroutes')
+const Emiroutes =  require('./routes/Emiroutes');
+const TyreLoanData = require('./routes/TyreloanRoutes');
+const customerRoutes = require('./routes/CustomerRoute');
+const UpdateData = require('./routes/UpdateRoute')
 var serviceAccount = require("./dealer-77fe8-firebase-adminsdk-x1y4o-a17271680b.json")
 dotenv.config(); 
 
@@ -31,128 +34,10 @@ app.get('/', (req, res) => {
     res.send('Hello, welcome to PNF Loan Backend!');
 });
 
-app.get('/cdloans',async (req,res)=>{
-    try{
-        const url = process.env.TIGERSHEET_API_URL;
-        const headers = {
-        'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-        };
-        const sheetId = process.env.TIGERSHEET_CDLOANS_SHEET_ID;
-        // Get criteria from request query parameters
-        const criteria = req.query.criteria || '';
-        const cdloansRecords = await getcdloansRecords(url, headers, sheetId,criteria);
-        res.send({data:cdloansRecords})
-
-    }catch(err){
-        console.error('Error in fetching data:', err.message);
-        res.status(500).send('Internal Server Error');
-    }
-});
-
-async function getcdloansRecords(url, headers, sheetId,criteria) {
-    const payload = {
-      'sheet_id': sheetId,
-      'criteria': criteria,
-    };
-  
-    const response = await axios.post(url, payload, { headers });
-    console.log('All Records from Tigersheet Backend', response.data);
-  
-    return response.data.data;
-  }
 
 app.use('/emi', Emiroutes)
-  app.get('/tyreloans', async (req, res) => {
-    try {
-      const url = process.env.TIGERSHEET_API_URL;
-      const headers = {
-        'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-      };
-      const sheetId = process.env.TIGERSHEET_TYRELOANS_SHEET_ID;
-      // Get criteria from request query parameters
-      const criteria = req.query.criteria || '';
-      const tyreLoansRecords = await getTyreLoansRecords(url, headers, sheetId, criteria);
-      res.send({ data: tyreLoansRecords });
-    } catch (err) {
-      console.error('Error in fetching data:', err.message);
-      res.status(500).send('Internal Server Error');
-    }
-  });
-  
-  async function getTyreLoansRecords(url, headers, sheetId, criteria) {
-    const payload = {
-      'sheet_id': sheetId,
-      'criteria': criteria,
-    };
-  
-    const response = await axios.post(url, payload, { headers });
-    console.log('All Records from Tigersheet Backend', response.data);
-  
-    return response.data.data;
-  }
-
-  app.use('/customer', customerRouter);
-  customerRouter.get('/',async (req,res)=>{
-    try{
-        const url = process.env.TIGERSHEET_API_URL;
-        const headers = {
-        'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-        };
-        const sheetId = process.env.TIGERSHEET_CUSTOMERS_SHEET_ID;
-        const criteria = req.query.criteria || '';;
-        const cdloansRecords = await getcustomerRecords(url, headers, sheetId,criteria);
-        res.send({data:cdloansRecords})
-
-    }catch(err){
-        console.error('Error in fetching data:', err.message);
-        res.status(500).send('Internal Server Error');
-    }
-})
-
-async function getcustomerRecords(url, headers, sheetId,criteria) {
-    const payload = {
-      'sheet_id': sheetId,
-      'criteria': criteria,
-    //   'sort':JSON.stringify([{"property":"column_85","direction":"desc"}])
-    };
-    const response = await axios.post(url, payload, { headers });
-    //console.log('All Records from Tigersheet Backend', response.data);
-  
-    return response.data.data;
-}
-
-customerRouter.get('/trucks',async (req,res)=>{
-    try{
-        const url = process.env.TIGERSHEET_API_URL;
-        const headers = {
-        'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-        };
-        const sheetId = process.env.TIGERSHEET_TRUCK_SHEET_ID;
-        // Get criteria from request query parameters
-        const criteria = req.query.criteria || '';;
-        const truckRecords = await gettruckRecords(url, headers, sheetId,criteria);
-        res.send({data:truckRecords})
-
-    }catch(err){
-        console.error('Error in fetching data:', err.message);
-        res.status(500).send('Internal Server Error');
-    }
-})
-
-async function gettruckRecords(url, headers, sheetId,criteria) {
-    const payload = {
-      'sheet_id': sheetId,
-      'criteria': criteria,
-    };
-    const response = await axios.post(url, payload, { headers });
-    //console.log('All Records from Tigersheet Backend', response.data);
-  
-    return response.data.data;
-}
+app.use('/tyreloans', TyreLoanData);
+app.use('/customer', customerRoutes)
 
 
 
@@ -338,63 +223,7 @@ async function getTyreData(url, headers, sheetId, data) {
 
   return response.data;
 }
-app.post("/updatedob", async (req, res) => {
-  try {
-    const url = process.env.TIGERSHEET_API_UPDATE_URL;
-    const headers = {
-      'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
-      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-    };
-    const sheetId = 42284627;
-    const {record_id, dob,pan, noofchildren,monthlyemioutflow, housetype,noofyearsinbusiness, } =  req.body;
-    const recordId = record_id;
-    
-    
-
-     const data = JSON.stringify({
-      "1091": {
-        "value": dob
-      },
-      "1089":{
-          "value": pan
-      },
-      "1093":{
-        "value":noofchildren
-      },
-      "1094":{
-        "value":monthlyemioutflow
-      },
-      "1096":{
-        "value": housetype
-      },
-      "1101":{
-        "value":noofyearsinbusiness
-      }
-    });
-    
-    
-
-    const tyreData = await getTyreData(url, headers, sheetId,recordId, data);
-    console.log('TyreData:', tyreData);
-
-    res.send({ data: tyreData });
-
-  } catch (err) {
-    console.error('Error in fetching data:', err.message);
-    res.status(500).send('Internal Server Error');
-  }
-});
-async function getTyreData(url, headers, sheetId,recordId, data) {
-  const payload = {
-    'sheet_id': sheetId,
-    'record_id': recordId,
-    'data': data
-  }
-  const response = await axios.post(url, payload, { headers });
-  //console.log('All Records from Tigersheet Backend', response.data);
-
-  return response.data;
-}
+app.post("/updatedob", UpdateData);
 // app.post("/updateKyc", async (req, res) => {
 //   try {
 //     const url = process.env.TIGERSHEET_API_UPDATE_URL;
