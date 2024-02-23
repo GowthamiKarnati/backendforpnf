@@ -425,12 +425,13 @@ app.post("/updateKyc", async (req, res) => {
     };
     const sheetId = 42284627;
     const {record_id,dob,pan,noofchildren,monthlyemioutflow, housetype,noofyearsinbusiness} = req.body;
+    console.log(pan)
     const recordId = record_id;
      const data = JSON.stringify({
       "1091":{
         "value":dob
       },
-      "1090":{
+      "1095":{
         "value":pan
       },
       "1093":{
@@ -505,6 +506,56 @@ async function getUpdateData(url, headers, sheetId,recordId, data) {
 
   return response.data;
 }
+
+
+app.post("/fileUpload", async (req, res) => {
+  try {
+    const url = process.env.TIGERSHEET_API_FILE_UPLOAD_URL;
+    const headers = {
+      'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
+      'Content-Type': 'multipart/form-data'
+    };
+    console.log(req.body)
+    // const UpdateData = await getUpdateData(url, headers,  formdata);
+
+    // res.send({ data: UpdateData });
+    return res.json({ msg: "Image Uploaded"})
+
+  } catch (err) {
+    console.error('Error in fetching data:', err.message);
+    res.status(500).send('Internal Server Error');
+  }
+});
+async function getUpdateData(url, headers,formdata) {
+  const payload = {
+    'formdata': formdata,
+  }
+  const response = await axios.post(url, payload, { headers });
+
+  return response.data;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 app.get('/customerKyc', async (req, res) => {
   try {
