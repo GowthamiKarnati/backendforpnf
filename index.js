@@ -431,7 +431,7 @@ app.post("/updateKyc", async (req, res) => {
       "1091":{
         "value":dob
       },
-      "1095":{
+      "1090":{
         "value":pan
       },
       "1093":{
