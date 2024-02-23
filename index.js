@@ -9,7 +9,8 @@ const cron = require('node-cron');
 const Emiroutes =  require('./routes/Emiroutes');
 const TyreLoanData = require('./routes/TyreloanRoutes');
 const customerRoutes = require('./routes/CustomerRoute');
-const UpdateData = require('./routes/UpdateRoute')
+const UpdateData = require('./routes/UpdateRoute');
+const CustomerKycData = require('./routes/CustomerKycRoute')
 var serviceAccount = require("./dealer-77fe8-firebase-adminsdk-x1y4o-a17271680b.json")
 dotenv.config(); 
 
@@ -371,45 +372,45 @@ async function getTyreData(url, headers, sheetId,recordId, data) {
 //   return response.data;
 // }
 
-app.post("/updatePhoto", async (req, res) => {
-  try {
-    const url = process.env.TIGERSHEET_API_UPDATE_URL;
-    const headers = {
-      'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
-      'Content-Type': 'multipart/image'
-    };
-    const sheetId = 42284627;
-    const {record_id,image} = req.body;
-    console.log(image)
-    const recordId = record_id;
-    const duumy = `[{\"name\":\"${image}\"}]`
-    // console.log(duumy)
-     const data = JSON.stringify({
-      "1088":{
-        "value":image
-        // "value": `[{\"name\":\"photo.jpg\",\"filepath\":\"${image}\",\"fullpath\":\"http://tigersheet.s3.amazonaws.com/${image}\",\"is_new\":true,\"size\":\"\"}]`
-      }
-    });
-    const UpdateData = await getUpdateData(url, headers, sheetId,recordId, data);
+// app.post("/updatePhoto", async (req, res) => {
+//   try {
+//     const url = process.env.TIGERSHEET_API_UPDATE_URL;
+//     const headers = {
+//       'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
+//       'Content-Type': 'multipart/image'
+//     };
+//     const sheetId = 42284627;
+//     const {record_id,image} = req.body;
+//     console.log(image)
+//     const recordId = record_id;
+//     const duumy = `[{\"name\":\"${image}\"}]`
+//     // console.log(duumy)
+//      const data = JSON.stringify({
+//       "1088":{
+//         "value":image
+//         // "value": `[{\"name\":\"photo.jpg\",\"filepath\":\"${image}\",\"fullpath\":\"http://tigersheet.s3.amazonaws.com/${image}\",\"is_new\":true,\"size\":\"\"}]`
+//       }
+//     });
+//     const UpdateData = await getUpdateData(url, headers, sheetId,recordId, data);
 
-    res.send({ data: UpdateData });
+//     res.send({ data: UpdateData });
 
-  } catch (err) {
-    console.error('Error in fetching data:', err.message);
-    res.status(500).send('Internal Server Error');
-  }
-});
-async function getUpdateData(url, headers, sheetId,recordId, data) {
-  const payload = {
-    'sheet_id': sheetId,
-    'record_id': recordId,
-    'data': data,
-  }
-  const response = await axios.post(url, payload, { headers });
-  //console.log('All Records from Tigersheet Backend', response.data);
+//   } catch (err) {
+//     console.error('Error in fetching data:', err.message);
+//     res.status(500).send('Internal Server Error');
+//   }
+// });
+// async function getUpdateData(url, headers, sheetId,recordId, data) {
+//   const payload = {
+//     'sheet_id': sheetId,
+//     'record_id': recordId,
+//     'data': data,
+//   }
+//   const response = await axios.post(url, payload, { headers });
+//   //console.log('All Records from Tigersheet Backend', response.data);
 
-  return response.data;
-}
+//   return response.data;
+// }
 
 
 app.post("/fileUpload", async (req, res) => {
@@ -460,36 +461,8 @@ async function getUpdateData(url, headers,formdata) {
 
 
 
-
-app.get('/customerKyc', async (req, res) => {
-  try {
-      const url = process.env.TIGERSHEET_API_URL;
-      const headers = {
-          'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
-          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-      };
-      const sheetId = process.env.TIGERSHEET_CUSTOMER_KYC_SHEET_ID;
-      // Get criteria from request query parameters
-      const criteria = req.query.criteria || '';
-      const customerKycRecords = await getCustomerKycRecords(url, headers, sheetId, criteria);
-      res.send({ data: customerKycRecords });
-  } catch (err) {
-      console.error('Error in fetching customerKyc data:', err.message);
-      res.status(500).send('Internal Server Error');
-  }
-});
-
-async function getCustomerKycRecords(url, headers, sheetId, criteria) {
-  const payload = {
-      'sheet_id': sheetId,
-      'criteria': criteria,
-  };
-
-  const response = await axios.post(url, payload, { headers });
-  //console.log('All Records from Tigersheet Backend', response.data);
-
-  return response.data.data;
-}
+app.use("/updatePhoto",UpdateData);
+app.use('/customerKyc', CustomerKycData);
 app.get('/dealers', async (req, res) => {
   try {
       const url = process.env.TIGERSHEET_API_URL;
