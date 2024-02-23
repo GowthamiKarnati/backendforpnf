@@ -3,6 +3,6 @@ const UpdateData = require('../middleware/UpdateMiddleware')
 
 const router = express()
 
-router.route('/').get(UpdateData);
+router.route('/').post(UpdateData);
 
 module.exports=router;
