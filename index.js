@@ -208,7 +208,7 @@ async function getUpdateData(url, headers, formdata) {
 
 
 
-app.use("/updatePhoto",UpdateData);
+//app.use("/updatePhoto",UpdateData);
 app.use('/customerKyc', CustomerKycData);
 app.get('/dealers', async (req, res) => {
   try {
