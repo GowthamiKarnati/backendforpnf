@@ -10,17 +10,25 @@ const Emiroutes =  require('./routes/Emiroutes');
 const TyreLoanData = require('./routes/TyreloanRoutes');
 const customerRoutes = require('./routes/CustomerRoute');
 const UpdateData = require('./routes/UpdateRoute');
-const CustomerKycData = require('./routes/CustomerKycRoute')
+const CustomerKycData = require('./routes/CustomerKycRoute');
+const DealerData = require('./routes/DealerRoute');
+const VehicleData = require('./routes/VehicleRoute');
+const TestLoans = require('./routes/TestloanRoute');
+const LoanApplications = require('./routes/LoanApplicationRoute');
+const FormData = require('form-data')
 var serviceAccount = require("./dealer-77fe8-firebase-adminsdk-x1y4o-a17271680b.json")
+const multer  = require('multer');
 dotenv.config(); 
 
 const app = express();
 const Port = process.env.PORT || 5000;
-app.use(bodyParser.urlencoded({ extended: true }));
+//app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: '10mb', extended: true }));
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(cors());
-
+app.use(express.static('uploads'));
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
@@ -30,6 +38,28 @@ const firestore = admin.firestore()
 const messaging = admin.messaging();
 
 
+const ds=multer.diskStorage({
+  destination:(req,file,cb)=>{
+      cb(null,"uploads/")
+  },
+  filename:(req,file,cb)=>{
+
+      cb(null,Date.now()+file.originalname)
+
+  }
+});
+
+
+const upload =multer({
+  storage:ds
+});
+
+
+
+
+
+
+
 app.get('/', (req, res) => {
     res.send('Hello, welcome to PNF Loan Backend!');
 });
@@ -37,7 +67,12 @@ app.get('/', (req, res) => {
 
 app.use('/emi', Emiroutes)
 app.use('/tyreloans', TyreLoanData);
-app.use('/customer', customerRoutes)
+app.use('/customer', customerRoutes);
+app.use('/customerKyc', CustomerKycData);
+app.use('/dealers', DealerData);
+app.use('/vehicles', VehicleData);
+app.use('/testloans', TestLoans);
+app.use('/loanapplication', LoanApplications);
 
 app.post("/create", async (req, res) => {
   try {
@@ -158,6 +193,36 @@ async function getTyreData(url, headers, sheetId,recordId, data) {
   return response.data;
 }
 
+// app.post("/fileUpload", upload.single('file'), async (req, res) => {
+//   try {
+//     const url = process.env.TIGERSHEET_API_FILE_UPLOAD_URL;
+//     const headers = {
+//       'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
+//       'Content-Type': 'multipart/form-data'
+//     };
+    
+//     // req.file contains the uploaded file
+//     console.log(req.file);
+
+//     // Create an array to hold file data
+//     let Filedata = [];
+
+//     // Push the uploaded file object into the array
+//     Filedata.push(req.file);
+
+//     // Create a FormData object to hold the file data
+    
+//     // Process the uploaded file, if needed
+//     //const fileresponse = await axios.post(url, Filedata, { headers });
+
+//     return res.json({ msg: "uploaded" });
+
+//   } catch (err) {
+//     console.error('Error in uploading file:', err.message);
+//     res.status(500).send('Internal Server Error');
+//   }
+// });
+
 app.post("/fileUpload", async (req, res) => {
   try {
     const url = process.env.TIGERSHEET_API_FILE_UPLOAD_URL;
@@ -165,25 +230,143 @@ app.post("/fileUpload", async (req, res) => {
       'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
       'Content-Type': 'multipart/form-data'
     };
-    console.log(req.body);
-
-    const fileresponse = await getUpdateData(url, headers, req.body); // Pass req.body directly
-
-    return res.json({data: fileresponse});
+    const base64Data = req.body.base64Data;
+    //console.log("Base64 data received:", base64Data);
+    const fileName = "image.jpg";
+    var formData = new FormData();
+    let bf = Buffer.from(base64Data, "base64");
+    formData.append("Filedata[]", bf, fileName);
+    const fileresponse = await axios.post(url, formData, { headers });
+    return res.json({ msg: fileresponse.data });
 
   } catch (err) {
-    console.error('Error in fetching data:', err.message);
+    console.error('Error in receiving base64 data:', err.message);
     res.status(500).send('Internal Server Error');
   }
 });
 
-async function getUpdateData(url, headers, formdata) {
+
+// app.post("/updatePhoto", async (req, res) => {
+//   try {
+//     const url = process.env.TIGERSHEET_API_UPDATE_URL;
+//     const headers = {
+//       'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
+//       'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+//     };
+    
+//     const sheetId = 42284627;
+//     const { record_id, files } = req.body;
+//     const recordId = record_id
+//     console.log("Files:", files);
+//     files.forEach(file => {
+//       console.log("Name:", file.name);
+//       console.log("Uploaded Name:", file.uploaded_name);
+//       console.log("Path:", file.path);
+//       console.log("Size:", file.size);
+//       console.log("Status:", file.status);
+//     });
+//     files.forEach(file => {
+//       const data = JSON.stringify({
+//         "1088": {
+//           "value": `[{
+//             \"name\":\"${file.name}\",
+//             \"uploaded_name\":\"${file.uploaded_name}\",
+//             \"path\":\"${file.path}\",
+//             \"size\":\"${file.size}\",
+//             \"status\":\"${file.status}\",
+//             \"filepath\":\"${file.uploaded_name}\",
+//             \"fullpath\":\"${file.path}\"
+//           }]`
+         
+//         }
+//      });
+//      const PhotoData = await getUpdatePhoto(url, headers, sheetId,recordId, data);
+//     console.log('PhotoData:', PhotoData);
+
+//     res.send({ data: PhotoData });
+//     });
+    
+    
+//     const PhotoData = await getUpdatePhoto(url, headers, sheetId,recordId, data);
+//     console.log('PhotoData:', PhotoData);
+
+//     res.send({ data: PhotoData });
+//     //res.send({ msg: "Files received successfully" });
+
+//   } catch (err) {
+//     console.error('Error in updating photo:', err.message);
+//     res.status(500).send('Internal Server Error');
+//   }
+// });
+
+// async function getUpdatePhoto(url, headers, sheetId,recordId, data) {
+//   const payload = {
+//     'sheet_id': sheetId,
+//     'record_id': recordId,
+//     'data': data
+//   }
+//   const response = await axios.post(url, payload, { headers });
+//   //console.log('All Records from Tigersheet Backend', response.data);
+
+//   return response.data;
+// }
+
+app.post("/updatePhoto", async (req, res) => {
+  try {
+    const url = process.env.TIGERSHEET_API_UPDATE_URL;
+    const headers = {
+      'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
+      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+    };
+    
+    const sheetId = 42284627;
+    const { record_id, files } = req.body;
+    const recordId = record_id;
+    console.log("Files:", files);
+
+    // Loop through each file
+    for (const file of files) {
+      console.log("Name:", file.name);
+      console.log("Uploaded Name:", file.uploaded_name);
+      console.log("Path:", file.path);
+      console.log("Size:", file.size);
+      console.log("Status:", file.status);
+
+      // Construct data for the file
+      const data = JSON.stringify({
+        "1088": {
+          "value": `[{
+            "name":"${file.name}",
+            "uploaded_name":"${file.uploaded_name}",
+            "path":"${file.path}",
+            "size":"${file.size}",
+            "status":"${file.status}",
+            "filepath":"${file.uploaded_name}",
+            "fullpath":"${file.path}"
+          }]`
+        }
+      });
+
+      // Call the update function for each file
+      const PhotoData = await getUpdatePhoto(url, headers, sheetId, recordId, data);
+      console.log('PhotoData:', PhotoData);
+    }
+
+    res.send({ msg: "Files updated successfully" });
+  } catch (err) {
+    console.error('Error in updating photo:', err.message);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+async function getUpdatePhoto(url, headers, sheetId, recordId, data) {
   const payload = {
-    'formdata': formdata,
+    'sheet_id': sheetId,
+    'record_id': recordId,
+    'data': data
   };
 
   const response = await axios.post(url, payload, { headers });
-
   return response.data;
 }
 
@@ -203,43 +386,8 @@ async function getUpdateData(url, headers, formdata) {
 
 
 
-
-
-
-
-
 //app.use("/updatePhoto",UpdateData);
-app.use('/customerKyc', CustomerKycData);
-app.get('/dealers', async (req, res) => {
-  try {
-      const url = process.env.TIGERSHEET_API_URL;
-      const headers = {
-          'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
-          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-      };
-      const sheetId = process.env.TIGERSHEET_DEALERS_SHEET_ID;
-      // Get criteria from request query parameters
-      const criteria = req.query.criteria || '';
-      const customersRecords = await getCustomersRecords(url, headers, sheetId, criteria);
-      res.send({ data: customersRecords });
 
-  } catch (err) {
-      console.error('Error in fetching data:', err.message);
-      res.status(500).send('Internal Server Error');
-  }
-});
-
-async function getCustomersRecords(url, headers, sheetId, criteria) {
-  const payload = {
-      'sheet_id': sheetId,
-      'criteria': criteria,
-  };
-
-  const response = await axios.post(url, payload, { headers });
-  //console.log('All Records from Tigersheet Backend for Customers', response.data);
-
-  return response.data.data;
-}
 
 app.get('/dealers/getUniqueDealers', async (req, res) => {
   try {
@@ -312,95 +460,8 @@ async function getCustomersRecords(url, headers, sheetId, criteria) {
 
   return response.data.data;
 }
-app.get('/vehicles', async (req, res) => {
-  try {
-    const url = process.env.TIGERSHEET_API_URL;
-    const headers = {
-      'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
-      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-    };
-    const sheetId = process.env.TIGERSHEET_VEHICLE_SHEET_ID;
-    const criteria = req.query.criteria || '';
-
-    const vehicleRecords = await getVehicleRecords(url, headers, sheetId, criteria);
-    res.send({ data: vehicleRecords });
-
-  } catch (err) {
-    console.error('Error in fetching data:', err.message);
-    res.status(500).send('Internal Server Error');
-  }
-});
-
-async function getVehicleRecords(url, headers, sheetId, criteria) {
-  const payload = {
-    'sheet_id': sheetId,
-    'criteria': criteria,
-  };
-
-  const response = await axios.post(url, payload, { headers });
-  //console.log('All Records from Tigersheet Backend for Vehicles', response.data);
-
-  return response.data.data;
-}
-app.get('/testloans', async (req, res) => {
-  console.log("r test loans request",req)
-  try {
-      const url = process.env.TIGERSHEET_API_URL;
-      const headers = {
-          'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
-          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-      };
-      const sheetId = process.env.TIGERSHEET_TEST_LOAN_APPLICATION_SHEET_ID;
-      // Get criteria from request query parameters
-      const criteria = req.query.criteria || '';
-      const testLoanRecords = await getTestLoanRecords(url, headers, sheetId, criteria);
-      console.log('testloans',testLoanRecords)
-      res.send({ data: testLoanRecords });
-  } catch (err) {
-      console.error('Error in fetching data: test loans', err.message);
-      res.status(500).send('Internal Server Error');
-  }
-});
-
-async function getTestLoanRecords(url, headers, sheetId, criteria) {
-  const payload = {
-      'sheet_id': sheetId,
-      'criteria': criteria,
-  };
 
 
-  const response = await axios.post(url, payload, { headers });
-  //console.log('All Records from Tigersheet Backend', response.data);
-
-  return response.data.data;
-}
-app.get('/loanapplication', async (req, res) => {
-  try {
-    const url = process.env.TIGERSHEET_API_URL;
-    const headers = {
-      'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
-      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-    };
-    const sheetId = process.env.TIGERSHEET_LOAN_APPLICATION_SHEET_ID; // Use the environment variable
-    const criteria = req.query.criteria || '';
-    const loanApplicationRecords = await getLoanRecords(url, headers, sheetId, criteria);
-    console.log('Loan application records:', loanApplicationRecords);
-    res.send({ data: loanApplicationRecords });
-  } catch (err) {
-    console.error('Error in fetching loan application data:', err.message);
-    res.status(500).send('Internal Server Error');
-  }
-});
-
-async function getLoanRecords(url, headers, sheetId, criteria) {
-  const payload = {
-    'sheet_id': sheetId,
-    'criteria': criteria,
-  };
-
-  const response = await axios.post(url, payload, { headers });
-  return response.data.data;
-}
 
 app.post('/workflow', async (req, res) => {
   const source = req.body.loan_id;
