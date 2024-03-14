@@ -367,6 +367,7 @@ app.post("/create", async (req, res) => {
                   loanType,
                   monthlyEMIOutflow,
                   noofyearsinbusiness,
+                  oldornew,
               } = req.body;
       
   
@@ -412,6 +413,7 @@ app.post("/create", async (req, res) => {
     "1412":{"value":loanType},
     "208":{"value":monthlyEMIOutflow},
     "206": {"value": noofyearsinbusiness},
+    "243":{"value": oldornew}
 
 };
 
@@ -434,7 +436,7 @@ app.post("/create", async (req, res) => {
       'data': data
     }
     const response = await axios.post(url, payload, { headers });
-    console.log('All Records from Tigersheet Backend', response.data);
+    //console.log('All Records from Tigersheet Backend', response.data);
   
     return response.data;
   }
