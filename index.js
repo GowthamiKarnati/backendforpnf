@@ -266,6 +266,7 @@ app.post("/create", async (req, res) => {
                   loanType,
                   monthlyEMIOutflow,
                   noofyearsinbusiness,
+                  oldornew
               } = req.body;
       
   
@@ -311,6 +312,8 @@ app.post("/create", async (req, res) => {
     "1412":{"value":loanType},
     "208":{"value":monthlyEMIOutflow},
     "206": {"value": noofyearsinbusiness},
+    "243":{"value": oldornew},
+    "234":{"value":PanNumber}
 
 };
 
