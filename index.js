@@ -59,7 +59,7 @@ app.use('/updatedob', UpdateData);
 app.use('/customers', DealerCustomers);
 app.use("/updatePhoto", UpdatePhoto);
 app.use('/createloan',loanApplicationData);
-app.use('updatepanphoto', UpdatePanPhoto);
+app.use('/updatepanphoto', UpdatePanPhoto);
 // app.post("/create", async (req, res) => {
 //   try {
 //     const url = process.env.TIGERSHEET_API_CREATE_URL;
