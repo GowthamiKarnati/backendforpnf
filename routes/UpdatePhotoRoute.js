@@ -1,8 +1,8 @@
 const express = require('express');
-const UpdatePhoto = require('../middleware/UpdatePhotoMiddleware')
+const UpdatePanPhoto = require('../middleware/UpdatePanPhotoMiddleware')
 
 const router = express()
 
-router.route('/').post(UpdatePhoto);
+router.route('/').post(UpdatePanPhoto);
 
 module.exports=router;
