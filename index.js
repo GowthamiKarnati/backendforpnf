@@ -21,6 +21,8 @@ const UpdatePhoto = require('./routes/UpdatePhotoRoute');
 const loanData = require('./routes/CreateApplicationRoute');
 const loanApplicationData = require('./routes/CreateLoanRoute');
 const UpdatePanPhoto = require('./routes/UpdatePanPhotoRoute');
+const UpdateAadharBack = require('./routes/UpdateAadharBackRoute')
+const UpdateAadharPhoto = require('./routes/UpdateAadharPhotoRoute');
 var serviceAccount = require("./dealer-77fe8-firebase-adminsdk-x1y4o-a17271680b.json");
 dotenv.config(); 
 
@@ -60,6 +62,8 @@ app.use('/customers', DealerCustomers);
 app.use("/updatePhoto", UpdatePhoto);
 app.use('/createloan',loanApplicationData);
 app.use('/updatepanphoto', UpdatePanPhoto);
+app.use('/updateAadharphoto', UpdateAadharPhoto);
+app.use('/updateAadharback',UpdateAadharBack);
 // app.post("/create", async (req, res) => {
 //   try {
 //     const url = process.env.TIGERSHEET_API_CREATE_URL;

@@ -5,7 +5,7 @@ async function getUpdatePhoto(url, headers, sheetId, recordId, data) {
       'record_id': recordId,
       'data': data
     };
-  
+    console.log("payload  ......",payload);
     const response = await axios.post(url, payload, { headers });
     return response.data;
   }
