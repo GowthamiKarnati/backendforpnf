@@ -128,7 +128,8 @@ app.post("/create", async (req, res) => {
                   oldornew,
                   pancard,
                   aadharfront,
-                  aadharback
+                  aadharback,
+                  dob
               } = req.body;
               console.log(req.body);
 const dataField = {
@@ -151,7 +152,8 @@ const dataField = {
   "1412": { "value": loanType },
   "208": { "value": monthlyEMIOutflow },
   "206": { "value": noofyearsinbusiness },
-  "243": { "value": oldornew }
+  "243": { "value": oldornew },
+  "1421": {"value": dob},
 };
 
 // Function to create the desired format for file data
