@@ -129,7 +129,8 @@ app.post("/create", async (req, res) => {
                   pancard,
                   aadharfront,
                   aadharback,
-                  dob
+                  dob,
+                  confpanNumber
               } = req.body;
               console.log(req.body);
 const dataField = {
@@ -147,7 +148,7 @@ const dataField = {
   "212": { "value": houseType },
   "213": { "value": truckNumber },
   "839": { "value": selectedBrand },
-  "234": { "value": PanNumber },
+  "234": { "value": confpanNumber },
   "214": { "value": driverSalary },
   "1412": { "value": loanType },
   "208": { "value": monthlyEMIOutflow },
