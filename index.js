@@ -23,6 +23,7 @@ const loanApplicationData = require('./routes/CreateLoanRoute');
 const UpdatePanPhoto = require('./routes/UpdatePanPhotoRoute');
 const UpdateAadharBack = require('./routes/UpdateAadharBackRoute')
 const UpdateAadharPhoto = require('./routes/UpdateAadharPhotoRoute');
+const createVehicle = require('./routes/CreatevehicleRoute');
 var serviceAccount = require("./dealer-77fe8-firebase-adminsdk-x1y4o-a17271680b.json");
 dotenv.config(); 
 
@@ -64,6 +65,10 @@ app.use('/createloan',loanApplicationData);
 app.use('/updatepanphoto', UpdatePanPhoto);
 app.use('/updateAadharphoto', UpdateAadharPhoto);
 app.use('/updateAadharback',UpdateAadharBack);
+app.use("/createvehicle", createVehicle);
+
+
+
 
 app.post("/fileUpload", async (req, res) => {
   try {
@@ -228,59 +233,7 @@ console.log(req.body);
 
 
 
-  app.post("/createvehicle", async (req, res) => {
-    try {
-      const url = process.env.TIGERSHEET_API_CREATE_URL;
-      const headers = {
-        'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-      };
-      const sheetId = 32026511;
   
-      const {truckNumber,rcNumber,rcPicture, name, namerefid} = req.body;
-      //console.log(req.body);
-      const rcPictureData = rcPicture.map(file => ({
-        "name": file.name,
-        "uploaded_name": file.uploaded_name,
-        "path": file.path,
-        "size": file.size,
-        "status": file.status,
-        "filepath": file.uploaded_name,
-        "fullpath": file.path
-      }));
-
-      const dataField = {
-        "608": { "value": truckNumber },
-        "1424": { "value": rcNumber },
-        "1420": { "value": JSON.stringify(rcPictureData) },
-        "609" : {"value":`{"reference_column_id":"${namerefid}","value":"${name}"}`}
-          };
-
-    const data = JSON.stringify(dataField);
-      console.log(data)
-  
-    const tyreData = await getTyreData(url, headers, sheetId, data);
-    console.log('TyreData:', tyreData);
-
-    res.send({ data: tyreData });
-    //res.send({msg:'successs'});
-  
-    } catch (err) {
-      console.error('Error in fetching data:', err.message);
-      res.status(500).send('Internal Server Error');
-    }
-  });
-  async function getTyreData(url, headers, sheetId, data) {
-    const payload = {
-      'sheet_id': sheetId,
-      'data': data
-    }
-    const response = await axios.post(url, payload, { headers });
-    //console.log('All Records from Tigersheet Backend', response.data);
-  
-    return response.data;
-  }
-
 
 
 
