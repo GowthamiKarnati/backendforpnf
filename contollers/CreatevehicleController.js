@@ -1,4 +1,4 @@
-import axios from "axios";
+const axios = require('axios');
 async function getTyreData(url, headers, sheetId, data) {
     const payload = {
       'sheet_id': sheetId,
