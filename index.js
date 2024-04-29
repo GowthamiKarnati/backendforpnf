@@ -135,7 +135,8 @@ app.post("/create", async (req, res) => {
                   aadharfront,
                   aadharback,
                   dob,
-                  confpanNumber
+                  confpanNumber,
+                  houseUrl
               } = req.body;
               console.log(req.body);
 const dataField = {
@@ -160,6 +161,8 @@ const dataField = {
   "206": { "value": noofyearsinbusiness },
   "243": { "value": oldornew },
   "1421": {"value": dob},
+  "1431": {"value": houseUrl}
+
 };
 
 // Function to create the desired format for file data
