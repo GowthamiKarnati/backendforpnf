@@ -24,6 +24,7 @@ const UpdatePanPhoto = require('./routes/UpdatePanPhotoRoute');
 const UpdateAadharBack = require('./routes/UpdateAadharBackRoute')
 const UpdateAadharPhoto = require('./routes/UpdateAadharPhotoRoute');
 const createVehicle = require('./routes/CreatevehicleRoute');
+const UpdateHouseImages = require('./routes/UpdateHouseImagesRoute');
 var serviceAccount = require("./dealer-77fe8-firebase-adminsdk-x1y4o-a17271680b.json");
 dotenv.config(); 
 
@@ -66,6 +67,7 @@ app.use('/updatepanphoto', UpdatePanPhoto);
 app.use('/updateAadharphoto', UpdateAadharPhoto);
 app.use('/updateAadharback',UpdateAadharBack);
 app.use("/createvehicle", createVehicle);
+app.use("/updatehouseimages", UpdateHouseImages);
 
 
 
@@ -136,7 +138,8 @@ app.post("/create", async (req, res) => {
                   aadharback,
                   dob,
                   confpanNumber,
-                  houseUrl
+                  houseUrl,
+                  houseImages 
               } = req.body;
               console.log(req.body);
 const dataField = {
@@ -195,13 +198,17 @@ if (aadharback && aadharback.length > 0) {
   dataField["1419"] = { "value": JSON.stringify(formattedAadharBackData) };
 }
 
+if (houseImages && houseImages.length > 0) {
+  const formattedHouseImageData = houseImages.map(createFileData);
+  dataField["1432"] = { "value": JSON.stringify(formattedHouseImageData) };
+}
 
-console.log(req.body);
+//console.log(req.body);
   const data = JSON.stringify(dataField);
       
   
       const tyreData = await getTyreData(url, headers, sheetId, data);
-      console.log('TyreData:', tyreData);
+      //console.log('TyreData:', tyreData);
   
       res.send({ data: tyreData });
   
@@ -346,5 +353,6 @@ async function main(source, name, mobilenumber) {
 
 
 app.listen(Port,()=>{
-    console.log(`Server is running on ${Port}`);
+  console.log(`Server is running on http://localhost:${Port}`);
+
 });

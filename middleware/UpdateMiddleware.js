@@ -7,7 +7,7 @@ const UpdateData = async (req, res) => {
         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
       };
       const sheetId = 42284627;
-      const {record_id, dob,pan, noofchildren,monthlyemioutflow, housetype,noofyearsinbusiness,nooftrucks,city , houseaddress, phone, altphone, marital, status} =  req.body;
+      const {record_id, dob,pan, noofchildren,monthlyemioutflow, housetype,noofyearsinbusiness,nooftrucks,city , houseaddress, phone, altphone, marital, status, houseUrl} =  req.body;
       const recordId = record_id;
       
       
@@ -51,6 +51,9 @@ const UpdateData = async (req, res) => {
         },
         "1409" :{
           "value": status
+        },
+        "1433":{
+          "value": houseUrl
         }
 
       });
