@@ -8,8 +8,8 @@ const createVehicle = async (req, res) => {
       };
       const sheetId = 32026511;
   
-      const {truckNumber,rcNumber,rcPicture, name, namerefid} = req.body;
-      //console.log(req.body);
+      const {truckNumber,rcNumber,rcPicture, name, namerefid, vehicleFiles} = req.body;
+      console.log(req.body.vehicleFiles);
       const rcPictureData = rcPicture.map(file => ({
         "name": file.name,
         "uploaded_name": file.uploaded_name,
@@ -19,14 +19,27 @@ const createVehicle = async (req, res) => {
         "filepath": file.uploaded_name,
         "fullpath": file.path
       }));
-
+      const createFileData = (file) => ({
+        name: file.name,
+        uploaded_name: file.uploaded_name,
+        path: file.path,
+        size: file.size,
+        status: file.status,
+        filepath: file.uploaded_name,
+        fullpath: file.path
+      });
       const dataField = {
         "608": { "value": truckNumber },
         "1424": { "value": rcNumber },
         "1420": { "value": JSON.stringify(rcPictureData) },
-        "609" : {"value":`{"reference_column_id":"${namerefid}","value":"${name}"}`}
+        "609" : {"value":`{"reference_column_id":"${namerefid}","value":"${name}"}`},
+        
           };
-
+        if (vehicleFiles && vehicleFiles.length > 0) {
+          const formattedVehicleImageData = vehicleFiles.map(createFileData);
+          dataField["1437"] = { "value": JSON.stringify(formattedVehicleImageData) };
+        }
+          
     const data = JSON.stringify(dataField);
       console.log(data)
   
