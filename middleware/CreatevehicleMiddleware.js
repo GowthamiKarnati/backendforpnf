@@ -48,6 +48,7 @@ const createVehicle = async (req, res) => {
 
     res.send({ data: tyreData });
     //res.send({msg:'successs'});
+    
   
     } catch (err) {
       console.error('Error in fetching data:', err.message);

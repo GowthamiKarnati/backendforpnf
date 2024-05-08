@@ -25,6 +25,7 @@ const UpdateAadharBack = require('./routes/UpdateAadharBackRoute')
 const UpdateAadharPhoto = require('./routes/UpdateAadharPhotoRoute');
 const createVehicle = require('./routes/CreatevehicleRoute');
 const UpdateHouseImages = require('./routes/UpdateHouseImagesRoute');
+const BrandProductData = require('./routes/BrandProductRoute');
 var serviceAccount = require("./dealer-77fe8-firebase-adminsdk-x1y4o-a17271680b.json");
 dotenv.config(); 
 
@@ -68,6 +69,7 @@ app.use('/updateAadharphoto', UpdateAadharPhoto);
 app.use('/updateAadharback',UpdateAadharBack);
 app.use("/createvehicle", createVehicle);
 app.use("/updatehouseimages", UpdateHouseImages);
+app.use("/brandproducts", BrandProductData);
 
 
 
@@ -139,7 +141,8 @@ app.post("/create", async (req, res) => {
                   dob,
                   confpanNumber,
                   houseUrl,
-                  houseImages 
+                  houseImages,
+                  selectedProduct 
               } = req.body;
               console.log(req.body);
 const dataField = {
@@ -164,7 +167,8 @@ const dataField = {
   "206": { "value": noofyearsinbusiness },
   "243": { "value": oldornew },
   "1421": {"value": dob},
-  "1431": {"value": houseUrl}
+  "1431": {"value": houseUrl},
+  "1453" : {"value": selectedProduct}
 
 };
 
@@ -227,6 +231,37 @@ if (houseImages && houseImages.length > 0) {
   
     return response.data;
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
