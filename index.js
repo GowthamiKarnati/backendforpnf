@@ -142,7 +142,8 @@ app.post("/create", async (req, res) => {
                   confpanNumber,
                   houseUrl,
                   houseImages,
-                  selectedProduct 
+                  selectedProduct,
+                  rcimage
               } = req.body;
               console.log(req.body);
 const dataField = {
@@ -168,7 +169,8 @@ const dataField = {
   "243": { "value": oldornew },
   "1421": {"value": dob},
   "1431": {"value": houseUrl},
-  "1453" : {"value": selectedProduct}
+  "1453" : {"value": selectedProduct},
+  
 
 };
 
@@ -187,6 +189,10 @@ const createFileData = (file) => ({
 if (pancard && pancard.length > 0) {
   const formattedPancardData = pancard.map(createFileData);
   dataField["1417"] = { "value": JSON.stringify(formattedPancardData) };
+}
+if (rcimage && rcimage.length > 0) {
+  const formattedRcimageData = rcimage.map(createFileData);
+  dataField["1454"] = { "value": JSON.stringify(formattedRcimageData) };
 }
 
 // Add aadharFront data if available
