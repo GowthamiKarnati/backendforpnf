@@ -144,7 +144,7 @@ app.post("/create", async (req, res) => {
                   houseImages,
                   selectedProduct,
                   rcimage,
-                  rcNumber
+                  
               } = req.body;
               console.log(req.body);
 const dataField = {
@@ -171,7 +171,7 @@ const dataField = {
   "1421": {"value": dob},
   "1431": {"value": houseUrl},
   "1453" : {"value": selectedProduct},
-  "1455": {"value": rcNumber},
+  
   
 
 };
