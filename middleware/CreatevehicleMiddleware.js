@@ -8,7 +8,7 @@ const createVehicle = async (req, res) => {
       };
       const sheetId = 32026511;
   
-      const {truckNumber,rcNumber,rcPicture, name, namerefid, vehicleFiles} = req.body;
+      const {truckNumber,rcPicture, name, namerefid, vehicleFiles} = req.body;
       console.log(req.body.vehicleFiles);
       const rcPictureData = rcPicture.map(file => ({
         "name": file.name,
@@ -30,7 +30,7 @@ const createVehicle = async (req, res) => {
       });
       const dataField = {
         "608": { "value": truckNumber },
-        "1424": { "value": rcNumber },
+        // "1424": { "value": rcNumber },
         "1420": { "value": JSON.stringify(rcPictureData) },
         "609" : {"value":`{"reference_column_id":"${namerefid}","value":"${name}"}`},
         
@@ -48,7 +48,7 @@ const createVehicle = async (req, res) => {
 
     res.send({ data: tyreData });
     //res.send({msg:'successs'});
-    
+
   
     } catch (err) {
       console.error('Error in fetching data:', err.message);
