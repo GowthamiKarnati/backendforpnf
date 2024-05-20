@@ -26,7 +26,7 @@ const UpdateAadharPhoto = require('./routes/UpdateAadharPhotoRoute');
 const createVehicle = require('./routes/CreatevehicleRoute');
 const UpdateHouseImages = require('./routes/UpdateHouseImagesRoute');
 const BrandProductData = require('./routes/BrandProductRoute');
-const DealerCustomers = require('./routes/DealerCustomerRoute')
+//const DealerCustomers = require('./routes/DealerCustomerRoute')
 var serviceAccount = require("./dealer-77fe8-firebase-adminsdk-x1y4o-a17271680b.json");
 dotenv.config(); 
 
