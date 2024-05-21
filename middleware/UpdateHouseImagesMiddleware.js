@@ -23,7 +23,7 @@ const UpdateHouseImages = async (req, res) => {
       });
       if (files && files.length > 0) {
         const formattedHouseImageData = files.map(createFileData);
-        dataField["1435"] = { "value": JSON.stringify(formattedHouseImageData) };
+        dataField["1459"] = { "value": JSON.stringify(formattedHouseImageData) };
       }
       const data = JSON.stringify(dataField);
       console.log(data);
