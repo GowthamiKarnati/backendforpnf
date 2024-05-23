@@ -61,7 +61,7 @@ const DealerCustomers = async (req, res) => {
         };
         const sheetId = process.env.TIGERSHEET_CUSTOMERS_SHEET_ID;
         const page = req.query.page ? parseInt(req.query.page) : 1;
-        const limit = 20; 
+        const limit = 10; 
         const searchValue = req.query.search || '';
 
         // Fetch customer records
