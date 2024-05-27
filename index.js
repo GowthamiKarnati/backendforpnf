@@ -246,8 +246,30 @@ if (houseImages && houseImages.length > 0) {
 
 
 
-
-
+  
+  app.post('/login/validate-login', async (req, res) => {
+    const { email, password } = req.body;
+  
+    console.log("Email and password", email, password);
+    try {
+      const response = await axios.post(
+        'https://pnf.tigersheet.com/login/validate-login',
+        `email=${email}&password=${password}`,
+        {
+          headers: {
+            'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+          }
+        }
+      );
+      //console.log(response.messages);
+      res.status(response.status).send(response.data);
+    } catch (error) {
+      // If there's an error with the external API, send an error response
+      console.error('Error:', error.response.data);
+      res.status(500).send('Internal Server Error');
+    }
+  });
 
 
 
