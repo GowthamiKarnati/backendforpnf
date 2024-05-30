@@ -273,8 +273,31 @@ if (houseImages && houseImages.length > 0) {
 
 
 
-
-
+  app.post('/gps', async(req, res) => {
+   try{
+    const url = process.env.TIGERSHEET_API_CREATE_URL;
+      const headers = {
+        'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+      };
+      const sheetId  = 55003861
+      const {latitude, longitude, timestamp} = req.body;
+      const dataField = {
+        "1476": { "value": latitude },
+        "1477": { "value": longitude },
+        "1478":{"value": timestamp}
+      }
+      const data = JSON.stringify(dataField);
+      
+  
+      const tyreData = await getTyreData(url, headers, sheetId, data);
+      //console.log('TyreData:', tyreData);
+  
+      res.send({ data: tyreData });
+   }catch(err){
+    console.log("Error in Adding Data", err);
+   }
+  });
 
 
 
