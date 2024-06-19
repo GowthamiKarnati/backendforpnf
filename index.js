@@ -285,13 +285,14 @@ if (houseImages && houseImages.length > 0) {
         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
       };
       const sheetId  = 55003861
-      const {latitude, longitude, timestamp, username} = req.body;
+      const {latitude, longitude, timestamp, username,appState} = req.body;
       console.log(req.body);
       const dataField = {
         "1476": { "value": latitude },
         "1477": { "value": longitude },
         "1478":{"value": timestamp},
-        "1482":{"value": username}
+        "1482":{"value": username},
+        "1483": {"value": appState}
       }
       const data = JSON.stringify(dataField);
       
