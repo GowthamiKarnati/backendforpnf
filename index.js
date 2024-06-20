@@ -77,7 +77,7 @@ app.use("/brandproducts", BrandProductData);
 app.use("/Allcustomers", DealerCustomers);
 app.use("/employees", EmployeesData);
 app.use("/pnfcustomers", PNFCustomerData);
-app.use("/gps",GPSData);
+app.use("/getgps",GPSData);
 
 
 
