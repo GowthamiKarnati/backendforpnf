@@ -85,8 +85,7 @@
 // }
 
 // module.exports = DealerCustomers;
-const getdCustomersRecords = require('../controllers/DealerCustomerController');
-
+const getdCustomersRecords = require('../contollers/DealerCustomerController')
 const DealerCustomers = async (req, res) => {
     try {
         const url = process.env.TIGERSHEET_API_URL;
@@ -101,7 +100,7 @@ const DealerCustomers = async (req, res) => {
 
         // Fetch customer records
         const customersRecords = await getdCustomersRecords(url, headers, sheetId);
-
+        console.log(customersRecords.slice(10))
         // Sort records in alphabetical order based on the 'name' field
         const sortedRecords = customersRecords.sort((a, b) => {
             const nameA = a.name.toUpperCase();
@@ -110,7 +109,7 @@ const DealerCustomers = async (req, res) => {
             if (nameA > nameB) return 1;
             return 0;
         });
-
+       console.log("Sorted", sortedRecords.slice(10))
         // Filter records based on search value
         const filteredRecords = sortedRecords.filter(record => 
             record.name.toLowerCase().includes(searchValue.toLowerCase()) ||
