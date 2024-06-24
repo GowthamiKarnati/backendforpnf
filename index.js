@@ -1,4 +1,5 @@
 const express = require('express');
+const http = require('http');
 const axios = require('axios');
 const cors = require('cors');
 const dotenv = require('dotenv');
@@ -6,6 +7,7 @@ const _ = require('lodash');
 const bodyParser = require('body-parser');
 const admin = require('firebase-admin');
 const cron = require('node-cron');
+const socketIO = require('socket.io');
 const Emiroutes =  require('./routes/Emiroutes');
 const TyreLoanData = require('./routes/TyreloanRoutes');
 const customerRoutes = require('./routes/CustomerRoute');
@@ -29,6 +31,8 @@ const BrandProductData = require('./routes/BrandProductRoute');
 const EmployeesData = require('./routes/EmployeesRoute');
 const PNFCustomerData = require('./routes/PNFCustomerRoute');
 const GPSData = require('./routes/GPSRoute');
+const UpdateLoanData = require('./routes/UpdateLoanApplicationRoute')
+const LoanHouseImagesData = require('./routes/UpdateLoanApplicationHouseImagesRoute')
 //const DealerCustomers = require('./routes/DealerCustomerRoute')
 var serviceAccount = require("./dealer-77fe8-firebase-adminsdk-x1y4o-a17271680b.json");
 dotenv.config(); 
@@ -49,6 +53,33 @@ admin.initializeApp({
 let tokens =[]
 const firestore = admin.firestore()
 const messaging = admin.messaging();
+const server = http.createServer(app);
+const io = socketIO(server);
+
+io.on('connection',
+  (socket) => {
+      console.log('New user connected');
+      //emit message from server to user
+      socket.emit('newMessage',
+          {
+              from: 'jen@mds',
+              text: 'hepppp',
+              createdAt: 123
+          });
+
+      // listen for message from user
+      socket.on('createMessage',
+          (newMessage) => {
+              console.log('newMessage', newMessage);
+          });
+
+      // when server disconnects from user
+      socket.on('disconnect',
+          () => {
+              console.log('disconnected from user');
+          });
+  });
+
 
 
 app.get('/', (req, res) => {
@@ -78,6 +109,9 @@ app.use("/Allcustomers", DealerCustomers);
 app.use("/employees", EmployeesData);
 app.use("/pnfcustomers", PNFCustomerData);
 app.use("/getgps",GPSData);
+app.use("/updateloanapplicationgps", UpdateLoanData);
+app.use("/updateloanapplicationhouseimages", LoanHouseImagesData);
+
 
 
 
