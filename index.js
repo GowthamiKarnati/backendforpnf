@@ -311,6 +311,24 @@ if (houseImages && houseImages.length > 0) {
 
 
 
+
+
+
+
+  app.post('/nativelocation', (req, res) => {
+    console.log('Received POST request at /nativelocation');
+    console.log('Received data:', req.body)
+    const success = true;
+    res.status(200).json({ success });
+  });
+
+
+
+
+
+
+
+
   app.post('/gps', async(req, res) => {
    try{
     const url = process.env.TIGERSHEET_API_CREATE_URL;
@@ -326,7 +344,7 @@ if (houseImages && houseImages.length > 0) {
         "1477": { "value": longitude },
         "1478":{"value": timestamp},
         "1482":{"value": username},
-        "1483": {"value": appState}
+        //"1483": {"value": appState}
       }
       const data = JSON.stringify(dataField);
       
