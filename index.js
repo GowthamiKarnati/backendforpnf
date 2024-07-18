@@ -33,6 +33,7 @@ const PNFCustomerData = require('./routes/PNFCustomerRoute');
 const GPSData = require('./routes/GPSRoute');
 const UpdateLoanData = require('./routes/UpdateLoanApplicationRoute')
 const LoanHouseImagesData = require('./routes/UpdateLoanApplicationHouseImagesRoute')
+const VendorData = require('./routes/VendorDataRoute')
 //const DealerCustomers = require('./routes/DealerCustomerRoute')
 var serviceAccount = require("./dealer-77fe8-firebase-adminsdk-x1y4o-a17271680b.json");
 dotenv.config(); 
@@ -111,6 +112,7 @@ app.use("/pnfcustomers", PNFCustomerData);
 app.use("/getgps",GPSData);
 app.use("/updateloanapplicationgps", UpdateLoanData);
 app.use("/updateloanapplicationhouseimages", LoanHouseImagesData);
+app.use("/vendor", VendorData )
 
 
 
@@ -315,17 +317,6 @@ if (houseImages && houseImages.length > 0) {
 
 
 
-  app.post('/nativelocation', (req, res) => {
-    console.log('Received POST request at /nativelocation');
-    console.log('Received data:', req.body)
-    const success = true;
-    res.status(200).json({ success });
-  });
-
-
-
-
-
 
 
 
@@ -361,6 +352,7 @@ if (houseImages && houseImages.length > 0) {
 
 
 
+  
 
 
 
