@@ -169,16 +169,31 @@ app.post('/vendorfileUpload', async (req, res) => {
       'Authorization': process.env.TIGERSHEET_AUTHORIZATION_ONDC_TOKEN,
       'Content-Type': 'multipart/form-data',
     };
-    const base64Data = req.body.base64Data;
-    const fileName = 'image.jpg';
 
-    // Convert base64 to buffer
-    const buffer = Buffer.from(base64Data.replace(/^data:image\/\w+;base64,/, ''), 'base64');
+    const base64Data = req.body.base64Data;
+    const fileType = req.body.fileType;
+
+    // Determine file extension and MIME type
+    let fileExtension;
+    let mimeType;
+
+    if (fileType.startsWith('image/')) {
+      fileExtension = fileType.split('/')[1];
+      mimeType = fileType;
+    } else if (fileType === 'application/pdf') {
+      fileExtension = 'pdf';
+      mimeType = 'application/pdf';
+    } else {
+      return res.status(400).json({ error: 'Unsupported file type' });
+    }
+
+    const buffer = Buffer.from(base64Data.replace(/^data:.*;base64,/, ''), 'base64');
+    const fileName = `uploaded_file.${fileExtension}`;
 
     const formData = new FormData();
     formData.append('Filedata[]', buffer, {
       filename: fileName,
-      contentType: 'image/jpeg',
+      contentType: mimeType,
       knownLength: buffer.length,
     });
 
