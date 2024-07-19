@@ -40,6 +40,7 @@ var serviceAccount = require("./dealer-77fe8-firebase-adminsdk-x1y4o-a17271680b.
 dotenv.config(); 
 
 const app = express();
+app.use(express.json({ limit: '50mb' }));
 const Port = process.env.PORT || 5000;
 //app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ limit: '10mb', extended: true }));
@@ -128,18 +129,74 @@ app.post("/fileUpload", async (req, res) => {
       'Content-Type': 'multipart/form-data'
     };
     const base64Data = req.body.base64Data;
-    //console.log("Base64 data received:", base64Data);
     const fileName = "image.jpg";
     var formData = new FormData();
     let bf = Buffer.from(base64Data, "base64");
     formData.append("Filedata[]", bf, fileName);
     const fileresponse = await axios.post(url, formData, { headers });
     return res.json({ msg: fileresponse.data });
+    
   } catch (err) {
-    console.error('Error in receiving base64 data:', err.message);
     res.status(500).send('Internal Server Error');
   }
 });
+
+
+// app.post("/vendorfileUpload", async (req, res) => {
+//   try {
+//     const url = process.env.TIGERSHEET_API_ONDC_FILE_UPLOAD_URL;
+//     const headers = {
+//       'Authorization': process.env.TIGERSHEET_AUTHORIZATION_ONDC_TOKEN,
+//       'Content-Type': 'multipart/form-data'
+//     };
+//     const base64Data = req.body.base64Data;
+//     const fileName = "image.jpg";
+//     var formData = new FormData();
+//     let bf = Buffer.from(base64Data, "base64");
+//     formData.append("Filedata[]", bf,  fileName);
+//     const fileresponse = await axios.post(url, formData, { headers });
+//     console.log(fileresponse.data);
+//     return res.json({ msg: fileresponse.data });
+    
+//   } catch (err) {
+//     res.status(500).send('Internal Server Error');
+//   }
+// });
+app.post('/vendorfileUpload', async (req, res) => {
+  try {
+    const url = process.env.TIGERSHEET_API_ONDC_FILE_UPLOAD_URL;
+    const headers = {
+      'Authorization': process.env.TIGERSHEET_AUTHORIZATION_ONDC_TOKEN,
+      'Content-Type': 'multipart/form-data',
+    };
+    const base64Data = req.body.base64Data;
+    const fileName = 'image.jpg';
+
+    // Convert base64 to buffer
+    const buffer = Buffer.from(base64Data.replace(/^data:image\/\w+;base64,/, ''), 'base64');
+
+    const formData = new FormData();
+    formData.append('Filedata[]', buffer, {
+      filename: fileName,
+      contentType: 'image/jpeg',
+      knownLength: buffer.length,
+    });
+
+    const fileresponse = await axios.post(url, formData, {
+      headers: {
+        ...headers,
+        ...formData.getHeaders(), // Include FormData headers
+      },
+    });
+
+    console.log(fileresponse.data);
+    return res.json({ msg: fileresponse.data });
+  } catch (err) {
+    console.error('Error uploading file:', err);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 
 
 
