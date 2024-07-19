@@ -34,6 +34,7 @@ const GPSData = require('./routes/GPSRoute');
 const UpdateLoanData = require('./routes/UpdateLoanApplicationRoute')
 const LoanHouseImagesData = require('./routes/UpdateLoanApplicationHouseImagesRoute')
 const VendorData = require('./routes/VendorDataRoute')
+const VendorDept = require('./routes/VendorDepartmentRoute')
 //const DealerCustomers = require('./routes/DealerCustomerRoute')
 var serviceAccount = require("./dealer-77fe8-firebase-adminsdk-x1y4o-a17271680b.json");
 dotenv.config(); 
@@ -112,7 +113,8 @@ app.use("/pnfcustomers", PNFCustomerData);
 app.use("/getgps",GPSData);
 app.use("/updateloanapplicationgps", UpdateLoanData);
 app.use("/updateloanapplicationhouseimages", LoanHouseImagesData);
-app.use("/vendor", VendorData )
+app.use("/vendor", VendorData );
+app.use("/vendordept",VendorDept)
 
 
 
@@ -133,7 +135,6 @@ app.post("/fileUpload", async (req, res) => {
     formData.append("Filedata[]", bf, fileName);
     const fileresponse = await axios.post(url, formData, { headers });
     return res.json({ msg: fileresponse.data });
-
   } catch (err) {
     console.error('Error in receiving base64 data:', err.message);
     res.status(500).send('Internal Server Error');
@@ -158,115 +159,111 @@ app.post("/create", async (req, res) => {
       };
       const sheetId = 38562544;
   
-      const { 
-                  numberOfTires, 
-                  selectedBrand, 
-                  loanAmount,
-                  mobilenumber,
-                  FullName, 
-                  PanNumber, 
-                  AlternateMobileNumber,
-                  martialStatus,
-                  numchildren,
-                  houseType,
-                  truckNumber,
-                  source,
-                  sourcerefid,
-                  date,
-                  NoOfTrucks,
-                  driverSalary,
-                  loanType,
-                  monthlyEMIOutflow,
-                  noofyearsinbusiness,
-                  oldornew,
-                  pancard,
-                  aadharfront,
-                  aadharback,
-                  dob,
-                  confpanNumber,
-                  houseUrl,
-                  houseImages,
-                  selectedProduct,
-                  rcimage,
-                  
-              } = req.body;
-              console.log(req.body);
-const dataField = {
-  "201": { "value": FullName },
-  "200": { "value": date },
-  "215": { "value": loanAmount },
-  "217": { "value": `{"reference_column_id":"${sourcerefid}","value":"${source}"}` },
-  "216": { "value": numberOfTires },
-  "202": { "value": PanNumber },
-  "203": { "value": mobilenumber },
-  "204": { "value": AlternateMobileNumber },
-  "205": { "value": NoOfTrucks },
-  "210": { "value": martialStatus },
-  "211": { "value": numchildren },
-  "212": { "value": houseType },
-  "213": { "value": truckNumber },
-  "839": { "value": selectedBrand },
-  "234": { "value": confpanNumber },
-  "214": { "value": driverSalary },
-  "1412": { "value": loanType },
-  "208": { "value": monthlyEMIOutflow },
-  "206": { "value": noofyearsinbusiness },
-  "243": { "value": oldornew },
-  "1421": {"value": dob},
-  "1431": {"value": houseUrl},
-  "1453" : {"value": selectedProduct},
-  
-  
+      const {
+            numberOfTires, 
+            selectedBrand, 
+            loanAmount,
+            mobilenumber,
+            FullName, 
+            PanNumber, 
+            AlternateMobileNumber,
+            martialStatus,
+            numchildren,
+            houseType,
+            truckNumber,
+            source,
+            sourcerefid,
+            date,
+            NoOfTrucks,
+            driverSalary,
+            loanType,
+            monthlyEMIOutflow,
+            noofyearsinbusiness,
+            oldornew,
+            pancard,
+            aadharfront,
+            aadharback,
+            dob,
+            confpanNumber,
+            houseUrl,
+            houseImages,
+            selectedProduct,
+            rcimage,
+        } = req.body;
+        console.log(req.body);
+  const dataField = {
+    "201": { "value": FullName },
+    "200": { "value": date },
+    "215": { "value": loanAmount },
+    "217": { "value": `{"reference_column_id":"${sourcerefid}","value":"${source}"}` },
+    "216": { "value": numberOfTires },
+    "202": { "value": PanNumber },
+    "203": { "value": mobilenumber },
+    "204": { "value": AlternateMobileNumber },
+    "205": { "value": NoOfTrucks },
+    "210": { "value": martialStatus },
+    "211": { "value": numchildren },
+    "212": { "value": houseType },
+    "213": { "value": truckNumber },
+    "839": { "value": selectedBrand },
+    "234": { "value": confpanNumber },
+    "214": { "value": driverSalary },
+    "1412": { "value": loanType },
+    "208": { "value": monthlyEMIOutflow },
+    "206": { "value": noofyearsinbusiness },
+    "243": { "value": oldornew },
+    "1421": {"value": dob},
+    "1431": {"value": houseUrl},
+    "1453" : {"value": selectedProduct},
+    
+    
 
-};
+  };
 
-// Function to create the desired format for file data
-const createFileData = (file) => ({
-  name: file.name,
-  uploaded_name: file.uploaded_name,
-  path: file.path,
-  size: file.size,
-  status: file.status,
-  filepath: file.uploaded_name,
-  fullpath: file.path
-});
+  // Function to create the desired format for file data
+  const createFileData = (file) => ({
+    name: file.name,
+    uploaded_name: file.uploaded_name,
+    path: file.path,
+    size: file.size,
+    status: file.status,
+    filepath: file.uploaded_name,
+    fullpath: file.path
+  });
 
-// Add pancard data if available
-if (pancard && pancard.length > 0) {
-  const formattedPancardData = pancard.map(createFileData);
-  dataField["1417"] = { "value": JSON.stringify(formattedPancardData) };
-}
-if (rcimage && rcimage.length > 0) {
-  const formattedRcimageData = rcimage.map(createFileData);
-  dataField["1454"] = { "value": JSON.stringify(formattedRcimageData) };
-}
+  // Add pancard data if available
+  if (pancard && pancard.length > 0) {
+    const formattedPancardData = pancard.map(createFileData);
+    dataField["1417"] = { "value": JSON.stringify(formattedPancardData) };
+  }
+  if (rcimage && rcimage.length > 0) {
+    const formattedRcimageData = rcimage.map(createFileData);
+    dataField["1454"] = { "value": JSON.stringify(formattedRcimageData) };
+  }
 
-// Add aadharFront data if available
-if (aadharfront && aadharfront.length > 0) {
-  const formattedAadharFrontData = aadharfront.map(createFileData);
-  dataField["1418"] = { "value": JSON.stringify(formattedAadharFrontData) };
-}
+  // Add aadharFront data if available
+  if (aadharfront && aadharfront.length > 0) {
+    const formattedAadharFrontData = aadharfront.map(createFileData);
+    dataField["1418"] = { "value": JSON.stringify(formattedAadharFrontData) };
+  }
 
 
-// Add aadharBack data if available
-if (aadharback && aadharback.length > 0) {
-  const formattedAadharBackData = aadharback.map(createFileData);
-  dataField["1419"] = { "value": JSON.stringify(formattedAadharBackData) };
-}
+  // Add aadharBack data if available
+  if (aadharback && aadharback.length > 0) {
+    const formattedAadharBackData = aadharback.map(createFileData);
+    dataField["1419"] = { "value": JSON.stringify(formattedAadharBackData) };
+  }
 
-if (houseImages && houseImages.length > 0) {
-  const formattedHouseImageData = houseImages.map(createFileData);
-  dataField["1432"] = { "value": JSON.stringify(formattedHouseImageData) };
-}
+  if (houseImages && houseImages.length > 0) {
+    const formattedHouseImageData = houseImages.map(createFileData);
+    dataField["1432"] = { "value": JSON.stringify(formattedHouseImageData) };
+  }
 
 //console.log(req.body);
   const data = JSON.stringify(dataField);
-      
-  
-      const tyreData = await getTyreData(url, headers, sheetId, data);
+  const tyreData = await getTyreData(url, headers, sheetId, data);
       //console.log('TyreData:', tyreData);
-  
-      res.send({ data: tyreData });
+  res.send({ data: tyreData });
   
     } catch (err) {
       console.error('Error in fetching data:', err.message);
@@ -283,6 +280,125 @@ if (houseImages && houseImages.length > 0) {
   
     return response.data;
   }
+
+  app.post("/createvendorinvoice", async (req, res) => {
+    try {
+      const url = process.env.TIGERSHEET_API_ONDC_CREATE_URL;
+      const headers = {
+        'Authorization': process.env.TIGERSHEET_AUTHORIZATION_ONDC_TOKEN,
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+      };
+      const sheetId = 13701944;
+  
+      const {
+        vendorPanNumber,
+        vendorName,
+        invoiceDate,
+        invoiceValue,
+        record_id,
+        purchaseOrderNumber,
+        ondcContactPocId,
+        ondcContactPocName,
+        files,
+        } = req.body;
+        console.log(req.body);
+  const dataField = {
+    "158": { "value": vendorPanNumber },
+    "60": { "value": `{"reference_column_id":"${record_id}","value":"${vendorName}"}` },
+    "56": { "value": invoiceDate },
+    "58": {"value": invoiceValue},
+    "57": {"value": purchaseOrderNumber},
+    "78": { "value": `{"reference_column_id":"${ondcContactPocId}","value":"${ondcContactPocName}"}` },
+  };
+  const createFileData = (file) => ({
+    name: file.name,
+    uploaded_name: file.uploaded_name,
+    path: file.path,
+    size: file.size,
+    status: file.status,
+    filepath: file.uploaded_name,
+    fullpath: file.path
+  });
+
+  // Add pancard data if available
+  if (files && files.length > 0) {
+    const formattedPancardData = files.map(createFileData);
+    dataField["159"] = { "value": JSON.stringify(formattedPancardData) };
+  }
+  const data = JSON.stringify(dataField);
+  const tyreData = await getTyreData(url, headers, sheetId, data);
+      console.log('TyreData:', tyreData);
+  res.send({ data: tyreData });
+  
+    } catch (err) {
+      console.error('Error in fetching data:', err.message);
+      res.status(500).send('Internal Server Error');
+    }
+  });
+  async function getTyreData(url, headers, sheetId, data) {
+    const payload = {
+      'sheet_id': sheetId,
+      'data': data
+    }
+    const response = await axios.post(url, payload, { headers });
+    //console.log('All Records from Tigersheet Backend', response.data);
+  
+    return response.data;
+  }
+
+
+
+
+
+
+
+
+  // app.post('/createvendorinvoice', async (req, res) => {
+  //   console.log(req.body);
+  //   try {
+  //     const url = process.env.TIGERSHEET_API_ONDC_CREATE_URL;
+  //     const headers = {
+  //       'Authorization': process.env.TIGERSHEET_AUTHORIZATION_ONDC_TOKEN,
+  //       'Content-Type': 'application/json'  // Adjusted to JSON if API expects JSON
+  //     };
+  //     const sheetId = 13701944;
+  //     const { vendorPanNumber, vendorName, invoiceDate, invoiceValue, purchaseOrderNumber, ondcContactPoc, files } = req.body;
+  //     const dataField = {
+  //       "158": { "value": vendorPanNumber },
+  //       "60": { "value": vendorName },
+  //       "56": { "value": invoiceDate }
+  //     };
+      
+  //     const tyreData = await getCreateData(url, headers, sheetId, dataField);  // Sending dataField directly
+  //     console.log(tyreData);
+  //     res.send({ data: tyreData });
+  //   } catch (err) {
+  //     console.error('Error in fetching data:', err.message);
+  //     res.status(500).send('Internal Server Error');
+  //   }
+  // });
+  
+  // async function getCreateData(url, headers, sheetId, data) {
+  //   const payload = {
+  //     'sheet_id': sheetId,
+  //     'data': data
+  //   };
+  //   try {
+  //     const response = await axios.post(url, payload, { headers });
+  //     console.log('All Records from Tigersheet Backend', response.data);
+  //     return response.data;
+  //   } catch (error) {
+  //     console.error('Error in API request:', error.response ? error.response.data : error.message);
+  //     throw error;
+  //   }
+  // }
+  
+
+
+
+
+
+
 
 
 
