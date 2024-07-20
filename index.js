@@ -169,7 +169,7 @@ app.post('/vendorfileUpload', async (req, res) => {
       'Authorization': process.env.TIGERSHEET_AUTHORIZATION_ONDC_TOKEN,
       'Content-Type': 'multipart/form-data',
     };
-
+console.log(req.body);
     const base64Data = req.body.base64Data;
     const fileType = req.body.fileType;
 

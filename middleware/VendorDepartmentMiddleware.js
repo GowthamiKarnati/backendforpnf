@@ -8,7 +8,9 @@ const VendorDept= async (req, res) => {
         };
         const sheetId = 58675056;
         // Get criteria from request query parameters
-        const criteria = req.query.criteria || '';
+        const dept = req.query.dept || '';
+        console.log(dept);
+        const criteria = `sheet_${sheetId}.column_77="${dept}"`;
         const customersRecords = await getDealersRecords(url, headers, sheetId, criteria);
         res.send({ data: customersRecords });
   

@@ -7,15 +7,22 @@ const VendorData = async (req, res) => {
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         };
         const sheetId = 21205795;
-        // Get criteria from request query parameters
-        const criteria = req.query.criteria || '';
+
+        // Get the cleaned value from request query parameters
+        const cleanedValue = req.query.cleanedValue || '';
+        console.log(cleanedValue);
+
+        // Construct the criteria string
+        const criteria = `sheet_${sheetId}.column_155="${cleanedValue}"`;
+        console.log(criteria);
+
         const customersRecords = await getDealersRecords(url, headers, sheetId, criteria);
         res.send({ data: customersRecords });
-  
+
     } catch (err) {
         console.error('Error in fetching data:', err.message);
         res.status(500).send('Internal Server Error');
     }
-  };
+};
 
   module.exports = VendorData;
