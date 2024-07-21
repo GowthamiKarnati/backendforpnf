@@ -141,27 +141,6 @@ app.post("/fileUpload", async (req, res) => {
   }
 });
 
-
-// app.post("/vendorfileUpload", async (req, res) => {
-//   try {
-//     const url = process.env.TIGERSHEET_API_ONDC_FILE_UPLOAD_URL;
-//     const headers = {
-//       'Authorization': process.env.TIGERSHEET_AUTHORIZATION_ONDC_TOKEN,
-//       'Content-Type': 'multipart/form-data'
-//     };
-//     const base64Data = req.body.base64Data;
-//     const fileName = "image.jpg";
-//     var formData = new FormData();
-//     let bf = Buffer.from(base64Data, "base64");
-//     formData.append("Filedata[]", bf,  fileName);
-//     const fileresponse = await axios.post(url, formData, { headers });
-//     console.log(fileresponse.data);
-//     return res.json({ msg: fileresponse.data });
-    
-//   } catch (err) {
-//     res.status(500).send('Internal Server Error');
-//   }
-// });
 app.post('/vendorfileUpload', async (req, res) => {
   try {
     const url = process.env.TIGERSHEET_API_ONDC_FILE_UPLOAD_URL;
@@ -171,7 +150,7 @@ app.post('/vendorfileUpload', async (req, res) => {
     };
 console.log(req.body);
     const base64Data = req.body.base64Data;
-    const fileType = req.body.fileType;
+    const fileType = req.body.mimeType;
 
     // Determine file extension and MIME type
     let fileExtension;
@@ -211,6 +190,56 @@ console.log(req.body);
     res.status(500).send('Internal Server Error');
   }
 });
+// app.post('/vendorregistorfileUpload', async (req, res) => {
+//   try {
+//     console.log(req.body);
+//     const url = process.env.TIGERSHEET_API_ONDC_FILE_UPLOAD_URL;
+//     const headers = {
+//       'Authorization': process.env.TIGERSHEET_AUTHORIZATION_ONDC_TOKEN,
+//       'Content-Type': 'multipart/form-data',
+//     };
+// //console.log(req.body);
+//     const base64Data = req.body.base64Data;
+//     const fileType = req.body.mimeType;
+
+//     // Determine file extension and MIME type
+//     let fileExtension;
+//     let mimeType;
+
+//     if (fileType.startsWith('image/')) {
+//       fileExtension = fileType.split('/')[1];
+//       mimeType = fileType;
+//     } else if (fileType === 'application/pdf') {
+//       fileExtension = 'pdf';
+//       mimeType = 'application/pdf';
+//     } else {
+//       return res.status(400).json({ error: 'Unsupported file type' });
+//     }
+
+//     const buffer = Buffer.from(base64Data.replace(/^data:.*;base64,/, ''), 'base64');
+//     const fileName = `uploaded_file.${fileExtension}`;
+
+//     const formData = new FormData();
+//     formData.append('Filedata[]', buffer, {
+//       filename: fileName,
+//       contentType: mimeType,
+//       knownLength: buffer.length,
+//     });
+
+//     const fileresponse = await axios.post(url, formData, {
+//       headers: {
+//         ...headers,
+//         ...formData.getHeaders(), // Include FormData headers
+//       },
+//     });
+
+//     console.log(fileresponse.data);
+//     return res.json({ msg: fileresponse.data });
+//   } catch (err) {
+//     console.error('Error uploading file:', err);
+//     res.status(500).send('Internal Server Error');
+//   }
+// });
 
 
 
@@ -407,16 +436,106 @@ app.post("/create", async (req, res) => {
       res.status(500).send('Internal Server Error');
     }
   });
-  async function getTyreData(url, headers, sheetId, data) {
-    const payload = {
-      'sheet_id': sheetId,
-      'data': data
-    }
-    const response = await axios.post(url, payload, { headers });
-    //console.log('All Records from Tigersheet Backend', response.data);
   
-    return response.data;
+
+app.post("/createvendor", async(req, res)=>{
+  console.log(req.body);
+  try{
+  const url = process.env.TIGERSHEET_API_ONDC_CREATE_URL;
+      const headers = {
+        'Authorization': process.env.TIGERSHEET_AUTHORIZATION_ONDC_TOKEN,
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+      };
+      const sheetId = 21205795;
+      const {legalEntityName,
+        contactPersonName,
+        designation,
+        contactNumber,
+        emailId,
+        address,
+        state,
+        pinCode,
+        panCardNumber,
+        typeOfEntity,
+        isMsme,
+        udyamFiles,
+        isGst,
+        gstFiles,
+        gstNumber,
+        bankName,
+        beneficiaryName,
+        accountNumber,
+        ifscCode,
+        cancelledFiles,
+        interested, 
+        notinterested
+       } = req.body;
+      const dataField = {
+        "28":{"value": legalEntityName},
+        "150": {"value": contactPersonName},
+        "151": {"value": designation},
+        "157": {"value": contactNumber},
+        "38": {"value": emailId},
+        "152": {"value": address},
+        "153": {"value": state},
+        "156": {"value": pinCode},
+        "155": {"value": panCardNumber},
+        "31": {"value": typeOfEntity},
+        "36": {"value": isMsme},
+        "178": {"value": isGst},
+        //"179": {"value": gstFiles},
+        "30": {"value": gstNumber},
+        "32": {"value": bankName},
+        "35": {"value": beneficiaryName},
+        "34": {"value": accountNumber},
+        "33": {"value": ifscCode},
+        //"180": {"value": cancelledFiles},
+        "41": {"value": interested},
+        "40": {"value": notinterested}
+
+      }
+      const createFileData = (file) => ({
+        name: file.name,
+        uploaded_name: file.uploaded_name,
+        path: file.path,
+        size: file.size,
+        status: file.status,
+        filepath: file.uploaded_name,
+        fullpath: file.path
+      });
+    
+      // Add pancard data if available
+      if (udyamFiles && udyamFiles.length > 0) {
+        const formattedUdyamData = udyamFiles.map(createFileData);
+        dataField["37"] = { "value": JSON.stringify(formattedUdyamData) };
+      }
+      if (gstFiles && gstFiles.length > 0) {
+        const formattedGstData =gstFiles.map(createFileData);
+        dataField["179"] = { "value": JSON.stringify(formattedGstData) };
+      }
+      if (cancelledFiles && cancelledFiles.length > 0) {
+        const formattedchequeData =cancelledFiles.map(createFileData);
+        dataField["180"] = { "value": JSON.stringify(formattedchequeData) };
+      }
+      const data = JSON.stringify(dataField);
+      const tyreData = await getTyreData(url, headers, sheetId, data);
+      console.log('TyreData:', tyreData);
+      res.send({ data: tyreData });  
+    }catch(err){
+      console.log(err);
+    }
+  
+})
+async function getTyreData(url, headers, sheetId, data) {
+  const payload = {
+    'sheet_id': sheetId,
+    'data': data
   }
+  const response = await axios.post(url, payload, { headers });
+  //console.log('All Records from Tigersheet Backend', response.data);
+
+  return response.data;
+}
 
 
 
