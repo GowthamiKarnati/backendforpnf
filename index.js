@@ -40,11 +40,11 @@ var serviceAccount = require("./dealer-77fe8-firebase-adminsdk-x1y4o-a17271680b.
 dotenv.config(); 
 
 const app = express();
-app.use(express.json({ limit: '50mb' }));
+app.use(express.json({ limit: '100mb' }));
 const Port = process.env.PORT || 5000;
 //app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json({ limit: '50mb', extended: true }));
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+app.use(bodyParser.json({ limit: '100mb', extended: true }));
+app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(cors());
@@ -134,7 +134,7 @@ app.post("/fileUpload", async (req, res) => {
     let bf = Buffer.from(base64Data, "base64");
     formData.append("Filedata[]", bf, fileName);
     const fileresponse = await axios.post(url, formData, { headers });
-    console.log(fileresponse.data);
+    console.log(fileresponse.data)
     return res.json({ msg: fileresponse.data });
     
   } catch (err) {
