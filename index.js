@@ -40,11 +40,11 @@ var serviceAccount = require("./dealer-77fe8-firebase-adminsdk-x1y4o-a17271680b.
 dotenv.config(); 
 
 const app = express();
-app.use(express.json({ limit: '100mb' }));
+app.use(express.json({ limit: '200mb' }));
 const Port = process.env.PORT || 5000;
 //app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json({ limit: '100mb', extended: true }));
-app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
+app.use(bodyParser.json({ limit: '200mb', extended: true }));
+app.use(bodyParser.urlencoded({ limit: '200mb', extended: true }));
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(cors());
