@@ -35,7 +35,6 @@ const UpdateLoanData = require('./routes/UpdateLoanApplicationRoute')
 const LoanHouseImagesData = require('./routes/UpdateLoanApplicationHouseImagesRoute')
 const VendorData = require('./routes/VendorDataRoute')
 const VendorDept = require('./routes/VendorDepartmentRoute')
-//const DealerCustomers = require('./routes/DealerCustomerRoute')
 var serviceAccount = require("./dealer-77fe8-firebase-adminsdk-x1y4o-a17271680b.json");
 dotenv.config(); 
 
@@ -116,8 +115,7 @@ app.use("/getgps",GPSData);
 app.use("/updateloanapplicationgps", UpdateLoanData);
 app.use("/updateloanapplicationhouseimages", LoanHouseImagesData);
 app.use("/vendor", VendorData );
-app.use("/vendordept",VendorDept)
-
+app.use("/vendordept",VendorDept);
 
 
 app.post('/fileUploadb', async (req, res) => {
@@ -218,56 +216,6 @@ console.log(req.body);
     res.status(500).send('Internal Server Error');
   }
 });
-// app.post('/vendorregistorfileUpload', async (req, res) => {
-//   try {
-//     console.log(req.body);
-//     const url = process.env.TIGERSHEET_API_ONDC_FILE_UPLOAD_URL;
-//     const headers = {
-//       'Authorization': process.env.TIGERSHEET_AUTHORIZATION_ONDC_TOKEN,
-//       'Content-Type': 'multipart/form-data',
-//     };
-// //console.log(req.body);
-//     const base64Data = req.body.base64Data;
-//     const fileType = req.body.mimeType;
-
-//     // Determine file extension and MIME type
-//     let fileExtension;
-//     let mimeType;
-
-//     if (fileType.startsWith('image/')) {
-//       fileExtension = fileType.split('/')[1];
-//       mimeType = fileType;
-//     } else if (fileType === 'application/pdf') {
-//       fileExtension = 'pdf';
-//       mimeType = 'application/pdf';
-//     } else {
-//       return res.status(400).json({ error: 'Unsupported file type' });
-//     }
-
-//     const buffer = Buffer.from(base64Data.replace(/^data:.*;base64,/, ''), 'base64');
-//     const fileName = `uploaded_file.${fileExtension}`;
-
-//     const formData = new FormData();
-//     formData.append('Filedata[]', buffer, {
-//       filename: fileName,
-//       contentType: mimeType,
-//       knownLength: buffer.length,
-//     });
-
-//     const fileresponse = await axios.post(url, formData, {
-//       headers: {
-//         ...headers,
-//         ...formData.getHeaders(), // Include FormData headers
-//       },
-//     });
-
-//     console.log(fileresponse.data);
-//     return res.json({ msg: fileresponse.data });
-//   } catch (err) {
-//     console.error('Error uploading file:', err);
-//     res.status(500).send('Internal Server Error');
-//   }
-// });
 
 
 
@@ -572,49 +520,50 @@ async function getTyreData(url, headers, sheetId, data) {
 
 
 
-  // app.post('/createvendorinvoice', async (req, res) => {
-  //   console.log(req.body);
-  //   try {
-  //     const url = process.env.TIGERSHEET_API_ONDC_CREATE_URL;
-  //     const headers = {
-  //       'Authorization': process.env.TIGERSHEET_AUTHORIZATION_ONDC_TOKEN,
-  //       'Content-Type': 'application/json'  // Adjusted to JSON if API expects JSON
-  //     };
-  //     const sheetId = 13701944;
-  //     const { vendorPanNumber, vendorName, invoiceDate, invoiceValue, purchaseOrderNumber, ondcContactPoc, files } = req.body;
-  //     const dataField = {
-  //       "158": { "value": vendorPanNumber },
-  //       "60": { "value": vendorName },
-  //       "56": { "value": invoiceDate }
-  //     };
-      
-  //     const tyreData = await getCreateData(url, headers, sheetId, dataField);  // Sending dataField directly
-  //     console.log(tyreData);
-  //     res.send({ data: tyreData });
-  //   } catch (err) {
-  //     console.error('Error in fetching data:', err.message);
-  //     res.status(500).send('Internal Server Error');
-  //   }
-  // });
-  
-  // async function getCreateData(url, headers, sheetId, data) {
-  //   const payload = {
-  //     'sheet_id': sheetId,
-  //     'data': data
-  //   };
-  //   try {
-  //     const response = await axios.post(url, payload, { headers });
-  //     console.log('All Records from Tigersheet Backend', response.data);
-  //     return response.data;
-  //   } catch (error) {
-  //     console.error('Error in API request:', error.response ? error.response.data : error.message);
-  //     throw error;
-  //   }
-  // }
-  
+app.post('/verifyPoc', async (req, res) => {
+  try {
+    const url = process.env.TIGERSHEET_API_ONDC;
+    const headers = {
+      'Authorization': process.env.TIGERSHEET_AUTHORIZATION_ONDC_TOKEN,
+      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+    };
+    const sheetId = 58675056;
 
+    // Get the cleaned value from request query parameters
+    const cleanedValue = req.query.verifyValue || '';
+    console.log(cleanedValue);
 
+    // Construct the criteria string
+    const criteria = `sheet_${sheetId}.column_75="${cleanedValue}"`;
+    const limit = 1;
+    const columns = 'column_74, column_75';
 
+    // Fetch the records
+    const customersRecords = await getDealersRecords(url, headers, sheetId, criteria);
+    
+    // Send the response with fetched data
+    res.send({ data: customersRecords });
+  } catch (err) {
+    console.error('Error in fetching data:', err.message);
+    
+    // Send an error response
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+async function getDealersRecords(url, headers, sheetId, criteria) {
+  const payload = {
+      'sheet_id': sheetId,
+      'criteria': criteria,
+      // 'limit' : limit,
+      // 'showFields': columns
+  };
+//console.log(payload)
+  const response = await axios.post(url, payload, { headers });
+  console.log('All Records from Tigersheet Backend for Customers', response.data);
+
+  return response.data.data;
+}
 
 
 
