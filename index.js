@@ -539,7 +539,7 @@ app.post('/verifyPoc', async (req, res) => {
     const columns = 'column_74, column_75';
 
     // Fetch the records
-    const customersRecords = await getDealersRecords(url, headers, sheetId, criteria);
+    const customersRecords = await getDealersRecords(url, headers, sheetId, criteria, limit, columns);
     
     // Send the response with fetched data
     res.send({ data: customersRecords });
@@ -551,12 +551,12 @@ app.post('/verifyPoc', async (req, res) => {
   }
 });
 
-async function getDealersRecords(url, headers, sheetId, criteria) {
+async function getDealersRecords(url, headers, sheetId, criteria, limit, columns) {
   const payload = {
       'sheet_id': sheetId,
       'criteria': criteria,
-      // 'limit' : limit,
-      // 'showFields': columns
+      'limit' : limit,
+      'showFields': columns
   };
 //console.log(payload)
   const response = await axios.post(url, payload, { headers });
