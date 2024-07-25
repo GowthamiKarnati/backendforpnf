@@ -41,6 +41,7 @@ dotenv.config();
 
 const app = express();
 app.use(express.json({ limit: '200mb' }));
+app.use(express.raw({ limit: '200mb', type: 'application/octet-stream' }));
 const Port = process.env.PORT || 5000;
 //app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ limit: '200mb', extended: true }));
@@ -119,7 +120,33 @@ app.use("/vendordept",VendorDept)
 
 
 
+app.post('/fileUploadb', async (req, res) => {
+  try {
+      const url = process.env.TIGERSHEET_API_FILE_UPLOAD_URL;
+      const headers = {
+          'Authorization': process.env.TIGERSHEET_AUTHORIZATION_TOKEN,
+          'Content-Type': 'multipart/form-data',
+      };
 
+      console.log(req.body);
+      const buffer = req.body;
+      const fileName = 'image.jpg';
+
+      // Create FormData and append buffer
+      const formData = new FormData();
+      formData.append('Filedata[]', buffer, fileName);
+
+      // Make sure to include the headers for FormData
+      const response = await axios.post(url, formData, { headers});
+
+      console.log(response.data);
+      res.json({ msg: response.data });
+
+  } catch (err) {
+      console.error('Error in /fileUpload:', err);
+      res.status(500).send('Internal Server Error');
+  }
+});
 
 app.post("/fileUpload", async (req, res) => {
   try {
