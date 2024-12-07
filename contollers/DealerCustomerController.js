@@ -1,8 +1,11 @@
 const axios = require('axios')
-async function getdCustomersRecords(url, headers, sheetId, criteria) {
+async function getdCustomersRecords(url, headers, sheetId, criteria, start, limit, sort) {
     const payload = {
         'sheet_id': sheetId,
         'criteria': criteria,
+        'start': start,
+        'limit': limit,
+        'sort': sort
     };
   
     const response = await axios.post(url, payload, { headers });

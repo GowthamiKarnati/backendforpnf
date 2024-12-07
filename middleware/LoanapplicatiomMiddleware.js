@@ -1,6 +1,5 @@
 const getLoanRecords = require('../contollers/LoanapplicationController');
 const LoanApplications = async (req, res) => {
-  console.log(req.query.limit)
     try {
       const url = process.env.TIGERSHEET_API_URL;
       const headers = {
@@ -9,11 +8,11 @@ const LoanApplications = async (req, res) => {
       };
       const sheetId = process.env.TIGERSHEET_LOAN_APPLICATION_SHEET_ID; 
       const criteria = req.query.criteria || '';
-      const limit = req.query.limit || 1000;
-      const loanApplicationRecords = await getLoanRecords(url, headers, sheetId, criteria, limit);
-
-
-      console.log('Loan application recordsssss:', loanApplicationRecords.record_id === 11);
+      const sort = req.query.sort || '';
+      const limit = parseInt(req.query.limit)|| '';
+      const start = parseInt(req.query.start) || '';
+      const loanApplicationRecords = await getLoanRecords(url, headers, sheetId, criteria, sort, start, limit);
+      console.log('Loan application recordsssss:', loanApplicationRecords?.length);
       res.send({ data: loanApplicationRecords });
     } catch (err) {
       console.error('Error in fetching loan application data:', err.message);
